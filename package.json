@@ -15,7 +15,10 @@
   },
   "dependencies": {
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "@babel/core": "^7.24.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.1",
+    "babel-jest": "^29.7.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
