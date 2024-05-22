@@ -23,13 +23,13 @@
 
 <script setup lang="ts">
 
- export default {
-  name: 'app',
- data(){return{
-      api_key:'fb8defc9bea7f74a0f9993ac1624c942'
+ // export default {
+  //name: 'app',
+ //data(){return{
+  //    api_key:'fb8defc9bea7f74a0f9993ac1624c942'
 
-     }
-  } }
+  //   }
+ // } }
 </script>
 
 
