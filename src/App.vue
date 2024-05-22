@@ -4,7 +4,7 @@
       <main>
         <div class="search-box">
           <input type="text" class="search-bar" placeholder="Search..."/>
-
+          <CityEntry class="BeispEntry" />
         </div>
         <table class="table">
           <thead>
@@ -16,37 +16,30 @@
             <th class="tableHeader">Standorte Verwalten</th>
           </tr>
           </thead>
-          <tbody>
-          <tr v-for="(item, index) in items" :key="index">
-            <td>{{ item.col1 }}</td>
-            <td>{{ item.col2 }}</td>
-            <td>
-              <select v-model="selectedOptions[index]">
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-              </select>
-            </td>
-          </tr>
-          </tbody>
         </table>
       </main>
     </div>
 </template>
 
-<script>
-export default {
+<script setup lang="ts">
+
+ export default {
   name: 'app',
-  data(){
-    return{
+ data(){return{
       api_key:'fb8defc9bea7f74a0f9993ac1624c942'
 
-    }
-  }
-}
+     }
+  } }
 </script>
 
+
 <style>
+.BeispEntry{
+  color: rgb(30, 30, 30);
+  position: absolute;
+  bottom: 350px;
+  font-size: 20px;
+}
 * {
   margin: 0;
   padding: 0;
