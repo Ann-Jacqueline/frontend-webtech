@@ -1,24 +1,16 @@
 
 <template>
-    <div id="app">
-      <main>
-        <div class="search-box">
-          <input type="text" class="search-bar" placeholder="Search..."/>
-          <CityEntry class="BeispEntry" />
-        </div>
-        <table class="table">
-          <thead>
-          <tr>
-            <th class="tableHeader"> Heute </th>
-            <th class="tableHeader">Morgen</th>
-            <th class="tableHeader">Favoriten</th>
-            <th class="tableHeader">Reisepläne</th>
-            <th class="tableHeader">Standorte Verwalten</th>
-          </tr>
-          </thead>
-        </table>
-      </main>
+
+    <div class="wrapper">
+      <nav>
+        <RouterLink to="/heroes">Heroes (Composition API)</RouterLink>
+        <RouterLink to="/heroes-oa">Heroes (Options API)</RouterLink>
+        <RouterLink to="/heroes-rest-api">Heroes (data from REST API)</RouterLink>
+      </nav>
     </div>
+
+
+  <RouterView />
 </template>
 
 <script setup lang="ts">
