@@ -2,6 +2,7 @@
 import { onMounted, ref, type Ref } from 'vue';
 import axios from 'axios';
 
+
 defineProps<{ title: string }>();
 
 
@@ -9,57 +10,42 @@ type CityEntry = { id: number; name: string; temperatur: number; wetterStatus: s
 
 const cityEntrys: Ref<CityEntry[]> = ref([]);
 const nameField = ref('');
-const temperaturField = ref('');
+const temperaturField = ref();
 const wetterStatusField = ref('');
 
 const url = import.meta.env.VITE_APP_BACKEND_BASE_URL
 
 function addCity(): void {
-  const endpoint = "/greeting";
   const cityEntry = {
     name: nameField.value,
     temperatur: temperaturField.value,
     wetterStatus: wetterStatusField.value
   };
 
-  // Überprüfen Sie die zusammengesetzte URL
-  const apiUrl = `${url}${endpoint}`;
-  console.log('POST request URL:', apiUrl);
 
   axios
-    .post<CityEntry>(apiUrl, cityEntry)
+    .post<CityEntry>(`${url}/greeting`, cityEntry)
     .then((response) => cityEntrys.value.push(response.data))
     .catch((error) => console.error('Error in POST request:', error));
 }
 
 function requestCitys(): void {
-  const endpoint = "/greeting";
-
-  // Überprüfen Sie die zusammengesetzte URL
-  const apiUrl = `${url}${endpoint}`;
-  console.log('GET request URL:', apiUrl);
 
   axios
-    .get<CityEntry[]>(apiUrl)
+    .get<CityEntry[]>(`${url}/greeting`)
     .then((response) => (cityEntrys.value = response.data))
     .catch((error) => console.error('Error in GET request:', error));
 }
 
 function removeCity(id: number): void {
-  const endpoint = `/greeting/${id}`;
-
-  // Überprüfen Sie die zusammengesetzte URL
-  const apiUrl = `${url}${endpoint}`;
-  console.log('DELETE request URL:', apiUrl);
 
   axios
-    .delete<void>(apiUrl)
+    .delete<void>(`${url}/greeting${id}`)
     .then(() => (cityEntrys.value = cityEntrys.value.filter((h) => h.id !== id)))
     .catch((error) => console.error('Error in DELETE request:', error));
 }
 
-
-
+// Lifecycle Hook
 onMounted(() => requestCitys());
 </script>
 
