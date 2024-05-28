@@ -4,6 +4,7 @@ import axios from 'axios';
 
 defineProps<{ title: string }>();
 
+
 type CityEntry = { id: number; name: string; temperatur: number; wetterStatus: string; };
 
 const cityEntrys: Ref<CityEntry[]> = ref([]);
@@ -11,45 +12,53 @@ const nameField = ref('');
 const temperaturField = ref('');
 const wetterStatusField = ref('');
 
-const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+const url = import.meta.env.VITE_APP_BACKEND_BASE_URL
 
 function addCity(): void {
+  const endpoint = "/greeting";
   const cityEntry = {
     name: nameField.value,
-    temperatur: parseFloat(temperaturField.value),
-    wetterStatus: wetterStatusField.value,
+    temperatur: temperaturField.value,
+    wetterStatus: wetterStatusField.value
   };
-  console.log('Sending POST request to add city:', cityEntry); // Debug-Ausgabe
+
+  // Überprüfen Sie die zusammengesetzte URL
+  const apiUrl = `${url}${endpoint}`;
+  console.log('POST request URL:', apiUrl);
+
   axios
-    .post<CityEntry>(`${url}/greeting`, cityEntry)
-    .then((response) => {
-      console.log('POST response:', response.data); // Debug-Ausgabe
-      cityEntrys.value.push(response.data);
-    })
-    .catch((error) => console.error('Error in POST request:', error)); // Debug-Ausgabe
+    .post<CityEntry>(apiUrl, cityEntry)
+    .then((response) => cityEntrys.value.push(response.data))
+    .catch((error) => console.error('Error in POST request:', error));
 }
 
 function requestCitys(): void {
-  console.log('Sending GET request to fetch cities'); // Debug-Ausgabe
+  const endpoint = "/greeting";
+
+  // Überprüfen Sie die zusammengesetzte URL
+  const apiUrl = `${url}${endpoint}`;
+  console.log('GET request URL:', apiUrl);
+
   axios
-    .get<CityEntry[]>(`${url}/greeting`)
-    .then((response) => {
-      console.log('GET response:', response.data); // Debug-Ausgabe
-      cityEntrys.value = response.data;
-    })
-    .catch((error) => console.error('Error in GET request:', error)); // Debug-Ausgabe
+    .get<CityEntry[]>(apiUrl)
+    .then((response) => (cityEntrys.value = response.data))
+    .catch((error) => console.error('Error in GET request:', error));
 }
 
 function removeCity(id: number): void {
-  console.log('Sending DELETE request for city with ID:', id); // Debug-Ausgabe
+  const endpoint = `/greeting/${id}`;
+
+  // Überprüfen Sie die zusammengesetzte URL
+  const apiUrl = `${url}${endpoint}`;
+  console.log('DELETE request URL:', apiUrl);
+
   axios
-    .delete<void>(`${url}/greeting/${id}`)
-    .then(() => {
-      console.log('DELETE response'); // Debug-Ausgabe
-      cityEntrys.value = cityEntrys.value.filter((h) => h.id !== id);
-    })
-    .catch((error) => console.error('Error in DELETE request:', error)); // Debug-Ausgabe
+    .delete<void>(apiUrl)
+    .then(() => (cityEntrys.value = cityEntrys.value.filter((h) => h.id !== id)))
+    .catch((error) => console.error('Error in DELETE request:', error));
 }
+
+
 
 onMounted(() => requestCitys());
 </script>
