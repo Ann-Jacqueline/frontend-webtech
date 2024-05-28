@@ -38,14 +38,38 @@ export default defineComponent({
   },
   mounted() {
     this.initCitys()
+
   }
 })
 </script>
 
 <template>
+  <h2>{{ title }}</h2>
+  <form @submit="onFormSubmitted()" @submit.prevent>
+    <!-- "@submit.prevent" prevents a page refresh after submitting form -->
+    <input type="text" placeholder="Name" v-model="nameField" />
+    <button>Add City</button>
+  </form>
+  <hr />
+  <table>
+    <tr>
+      <th>Delete</th>
+      <th>Name</th>
+      <th>ID</th>
+    </tr>
+    <tr v-if="!cityEntrys.length">
+      <td colspan="3">No Citys yet!</td>
+    </tr>
+    <tr v-for="city in cityEntrys" :key="city.id">
+      <td>
+        <button @click="removeCity(city.id)" class="delete">delete</button>
+      </td>
+      <td>{{ city.name }}</td>
+      <td>({{ city.id }})</td>
 
+    </tr>
+  </table>
 </template>
-
 <style scoped>
 
 </style>

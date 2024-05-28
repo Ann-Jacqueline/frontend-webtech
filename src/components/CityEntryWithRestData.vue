@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, type Ref } from 'vue';
-import axios from 'axios';
+import axios from 'axios'
 
 
 defineProps<{ title: string }>();
@@ -13,7 +13,9 @@ const nameField = ref('');
 const temperaturField = ref();
 const wetterStatusField = ref('');
 
-const url = import.meta.env.VITE_APP_BACKEND_BASE_URL
+
+const url = import.meta.env.VITE_BACKEND_BASE_URL // 'http://localhost:8080' in dev mode
+
 
 function addCity(): void {
   const cityEntry = {
@@ -51,7 +53,7 @@ onMounted(() => requestCitys());
 
 <template>
   <h2>{{ title }}</h2>
-  <form @submit.prevent="addCity">
+  <form @submit.prevent="addCity()">
     <input type="text" placeholder="Name" v-model="nameField" />
     <input type="number" placeholder="Temperatur" v-model="temperaturField" />
     <input type="text" placeholder="Wetterstatus" v-model="wetterStatusField" />

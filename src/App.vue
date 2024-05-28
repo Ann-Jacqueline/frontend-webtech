@@ -1,4 +1,6 @@
-
+<script setup lang="ts">
+import { RouterLink, RouterView } from 'vue-router'
+</script>
 <template>
   <div id="app">
     <main>
@@ -6,22 +8,19 @@
         <input type="text" class="search-bar" placeholder="Search..."/>
         <CityEntry class="BeispEntry" />
       </div>
-      <table class="table">
-        <thead>
-        <tr>
-          <th class="tableHeader"> Heute </th>
-          <th class="tableHeader">Morgen</th>
-          <th class="tableHeader">Favoriten</th>
-          <th class="tableHeader">Reisepläne</th>
-          <th class="tableHeader">Standorte Verwalten</th>
-        </tr>
-        </thead>
-      </table>
+      <nav class="table">
+          <RouterLink to="/cities-oa" class="tableHeader"> Heute </RouterLink>
+          <RouterLink to="/cities-oa" class="tableHeader">Morgen</RouterLink>
+          <RouterLink to="/cities-rest-api" class="tableHeader">Favoriten</RouterLink>
+          <RouterLink to="/cities-rest-api" class="tableHeader">Reisepläne</RouterLink>
+          <RouterLink to="/cities-rest-api" class="tableHeader">Standorte Verwalten</RouterLink>
+      </nav>
     </main>
   </div>
+  <RouterView />
 </template>
 
-<script setup lang="ts">
+
 
 //  export default {
 //    name: 'app',
@@ -30,7 +29,7 @@
 //
 //    }
 //  } }
-</script>
+
 
 
 <style>
