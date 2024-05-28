@@ -1,43 +1,32 @@
 <script setup lang="ts">
+import CityEntryWithRestDataView from '@/views/CityEntryWithRestDataView.vue'
 import { RouterLink, RouterView } from 'vue-router'
 </script>
+
 <template>
   <div id="app">
     <main>
       <div class="search-box">
-        <input type="text" class="search-bar" placeholder="Search..."/>
-        <CityEntry class="BeispEntry" />
+        <input type="text" class="search-bar" placeholder="Search..." />
+        <CityEntryWithRestDataView class="BeispEntry" />
       </div>
       <nav class="table">
-          <RouterLink to="/cities-oa" class="tableHeader"> Heute </RouterLink>
-          <RouterLink to="/cities-oa" class="tableHeader">Morgen</RouterLink>
-          <RouterLink to="/cities-rest-api" class="tableHeader">Favoriten</RouterLink>
-          <RouterLink to="/cities-rest-api" class="tableHeader">Reisepläne</RouterLink>
-          <RouterLink to="/cities-rest-api" class="tableHeader">Standorte Verwalten</RouterLink>
+        <RouterLink to="/cities-oa" class="tableHeader">Heute</RouterLink>
+        <RouterLink to="/cities-oa" class="tableHeader">Morgen</RouterLink>
+        <RouterLink to="/cities-rest-api" class="tableHeader">Favoriten</RouterLink>
+        <RouterLink to="/cities-rest-api" class="tableHeader">Reisepläne</RouterLink>
+        <RouterLink to="/cities-rest-api" class="tableHeader">Standorte Verwalten</RouterLink>
       </nav>
     </main>
+    <RouterView />
   </div>
-  <RouterView />
 </template>
 
-
-
-//  export default {
-//    name: 'app',
-// data(){return{
-//     api_key:'fb8defc9bea7f74a0f9993ac1624c942'
-//
-//    }
-//  } }
-
-
-
-<style>
-.BeispEntry{
+<style scoped>
+.BeispEntry {
   color: rgb(30, 30, 30);
-  position: absolute;
-  bottom: 350px;
   font-size: 20px;
+  margin-bottom: 20px;
 }
 * {
   margin: 0;
@@ -50,47 +39,60 @@ body {
   font-family: 'montserrat', sans-serif;
   width: 100vw;
   background-image: url('./assets/pic13.jpg');
-
 }
 
-#app {
-  transition: background-image 0.5s ease-in-out, opacity 0.5s ease-in-out;
-}
 
 main {
   min-height: 100vh;
   padding: 25px;
-
 }
-.search-box .search-bar{
-  margin-left: 350px;
+
+.search-box .search-bar {
   display: block;
-  width: 25%;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 30px;
   padding: 15px;
   color: #1e1e1e;
   font-size: 20px;
-  border-radius: 0px 16px 0px 16px;
-  box-shadow: 0px 0px 16px rgba(0,0,0,0.25) ;
+  border-radius: 16px;
+  box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.25);
   appearance: none;
   border: none;
   outline: none;
   background: rgba(207, 196, 196, 0.42);
-  transition: 0.4s
+  transition: 0.4s;
 }
+
 .search-box .search-bar:focus {
-  box-shadow: 0px 0px 8px rgba(0,0,0,0.25);
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
   background-color: rgba(214, 219, 225, 0.75);
-  border-radius: 16px 0px 16px 0px;
 }
+
 .search-box {
   width: 100%;
   margin-bottom: 30px;
-  margin-left:auto;
-
+  text-align: center;
 }
+
+.table {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
 .tableHeader {
-  color: black;
-  padding-right: 200px;
+  color: red;
   font-size: large;
+  text-decoration: none;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.tableHeader:hover {
+  background-color: #f0f0f0;
 }
 </style>
+

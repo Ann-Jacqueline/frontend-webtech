@@ -1,13 +1,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
-type CityEntry = { id: number; name: string; currentTemperatur: number; wetterStatus: string; };
+type CityEntry = { id: number; name: string; };
 type CityEntryListOaData = {
   cityEntrys: CityEntry[]
   nameField: string
   currentId: number
-  currentTemperatur: number
-  wetterStatus: string
+
 }
 export default defineComponent({
   name: 'CityEntryWithOptionsAPI',
@@ -17,20 +16,19 @@ export default defineComponent({
       nameField: '',
       currentId: 1,
       cityEntrys: [],
-      currentTemperatur: 26,
-      wetterStatus: ''
+
     }
   },
   methods: {
     initCitys(): void {
-      this.addCity('Berlin',"Sonnig",26)
-      this.addCity('Paris',"Wolkig",13)
+      this.addCity('Berlin')
+      this.addCity('Paris')
     },
-    addCity(name: string, wetterStatus: string, currentTemperatur: number): void {
-      this.cityEntrys.push({ name, id: this.currentId++, wetterStatus,currentTemperatur})
+    addCity(name: string): void {
+      this.cityEntrys.push({ name, id: this.currentId++})
     },
     onFormSubmitted(): void {
-      this.addCity(this.nameField.valueOf(),this.wetterStatus.valueOf(),this.currentTemperatur.valueOf())
+      this.addCity(this.nameField.valueOf())
     },
     removeCity(id: number): void {
       this.cityEntrys = this.cityEntrys.filter((h) => h.id !== id)
@@ -71,5 +69,37 @@ export default defineComponent({
   </table>
 </template>
 <style scoped>
+form {
+  display: flex;
+  margin: 0 -16px;
 
+  * {
+    margin: 16px;
+  }
+
+  input {
+    flex-grow: 1;
+  }
+}
+
+table {
+  margin: 8px -8px 0;
+
+  th,
+  td {
+    padding: 8px;
+  }
+}
+
+button {
+  border-radius: 48px;
+  padding: 8px;
+  border: none;
+  cursor: pointer;
+
+  &.delete {
+    background: darkred;
+    color: white;
+  }
+}
 </style>
