@@ -11,12 +11,7 @@ const nameField = ref('');
 
 const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
-function initCitys(): void {
-  cityEntrys.value = [
-    { name: 'Berlin', id: 1 },
-    { name: 'Paris', id: 2 },
-  ];
-}
+
 
 function addCity(): void {
   const cityEntry = {
@@ -35,18 +30,16 @@ function requestCities(): void {
     .then((response) => (cityEntrys.value = response.data))
     .catch((error) => console.error(error));
 }
-
 function removeCity(id: number): void {
   axios
-    .delete<void>(`${url}/greeting/`)
-    .then(() => (cityEntrys.value = cityEntrys.value.filter((c) => c.id !== id)))
+    .delete<void>(`${url}/greeting/${id}`) // Aktualisieren Sie den Endpunkt-Pfad
+    .then(() => (cityEntrys.value = cityEntrys.value.filter((entry) => entry.id !== id)))
     .catch((error) => console.error(error));
 }
 
 // Lifecycle Hook
 onMounted(() => {
   requestCities();
-  initCitys();
 });
 </script>
 
