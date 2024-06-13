@@ -8,10 +8,12 @@ type CityEntry = { id: number; name: string };
 
 const cityEntrys: Ref<CityEntry[]> = ref([]);
 const nameField = ref('');
+const currentTab = ref('locations');
 
 const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
-
+const setTab = (tab: string): void => {
+  currentTab.value = tab;}
 
 function addCity(): void {
   const cityEntry = {
@@ -38,97 +40,147 @@ function removeCity(id: number): void {
 }
 
 // Lifecycle Hook
-onMounted(() => {
-  requestCities();
-});
+  onMounted(() => {
+    requestCities();
+  });
 </script>
 
 <template>
-  <h2>{{ title }}</h2>
-  <form @submit="addCity()" @submit.prevent>
-    <input type="text" placeholder="Name" v-model="nameField" />
-    <button>Add City</button>
-  </form>
-  <hr />
-  <table>
-    <tr>
-      <th>Delete</th>
-      <th>Name</th>
-      <th>ID</th>
-    </tr>
-    <tr v-if="!cityEntrys.length">
-      <td></td>
-      <td></td>
-      <td>No Citys yet!</td>
-    </tr>
-    <tr v-for="city in cityEntrys" :key="city.id">
-      <td>
-        <button @click="removeCity(city.id)" class="delete">delete</button>
-      </td>
-      <td>{{ city.name }}</td>
-      <td>({{ city.id }})</td>
-    </tr>
-  </table>
+  <div id="app">
+    <!-- Header with Logo and Title -->
+    <div class="header">
+      <img src="C:/Users/Ann-Jacqueline/Pictures/weatherworks ohne backround.png" alt="WeatherWorks Logo">
+    </div>
+    <div class="title">
+      <h1 class="text-4xl font-bold">WeatherWorks</h1>
+      <p>Your companion even on rainy days</p>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs">
+      <button @click="setTab('locations')" :class="['tab-button', { active: currentTab === 'locations' }]">Standorte</button>
+      <button @click="setTab('favorites')" :class="['tab-button', { active: currentTab === 'favorites' }]">Favoriten</button>
+      <button @click="setTab('travelPlans')" :class="['tab-button', { active: currentTab === 'travelPlans' }]">Reisepläne</button>
+    </nav>
+
+    <!-- Content -->
+    <div class="content">
+      <div v-if="currentTab === 'locations'" class="list-container">
+        <form @submit.prevent="addCity" class="input-container">
+          <label for="city" class="block font-bold mb-2">City Name</label>
+          <input v-model="nameField" type="text" id="city" placeholder="Enter city name" class="dark-blue-transparent">
+          <button type="submit">Add City</button>
+        </form>
+        <ul>
+          <li v-for="city in cityEntrys" :key="city.id" class="flex justify-between items-center mb-2">
+            <span>{{ city.name }}</span>
+            <button @click="removeCity(city.id)" class="btn-delete">Delete</button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Placeholder for Favorites tab -->
+      <div v-if="currentTab === 'favorites'" class="list-container">
+        <p>Favorites content goes here.</p>
+      </div>
+
+      <!-- Placeholder for Travel Plans tab -->
+      <div v-if="currentTab === 'travelPlans'" class="list-container">
+        <p>Travel Plans content goes here.</p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-form {
+body {
+  background-image: url("../assets/Main Backround.jpg"); /* Pfad zu Ihrem Hintergrundbild */
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  justify-content: space-between;
+  color: white; /* Hinzugefügt, um die Textfarbe weiß zu machen */
+}
+
+.header {
+  display: flex;
+  justify-content: center; /* Geändert von flex-end zu center */
+  align-items: center;
+  padding: 20px;
+  text-align: center; /* Hinzugefügt */
+}
+
+.header img {
+  width: 120px; /* Adjust the size as needed */
+  margin-left: 20px; /* Space between title and logo, hinzugefügt */
+}
+
+.title {
+  text-align: center;
+  margin-top: 20px; /* Adjusted to bring title higher */
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px; /* Adjust the margin as needed */
+}
+
+.tab-button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.3); /* White transparent */
+  color: white;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.tab-button.active {
+  background-color: rgba(255, 255, 255, 0.3); /* White transparent */
+  color: #003366;
+  border-color: #003366;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  margin-top: 40px; /* Adjust the margin as needed */
+}
+
+.list-container {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: black;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.input-container {
+  padding: 15px;
+  border-radius: 8px;
   margin-bottom: 20px;
 }
 
-form input {
+.input-container input {
+  background-color: rgba(0, 51, 102, 0.8); /* Transparent dark blue */
+  color: white;
+  border: 1px solid white;
   padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-form button {
-  padding: 10px 15px;
-  font-size: 16px;
-  color: #fff;
-  background-color: #007bff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-form button:hover {
-  background-color: #0056b3;
-}
-
-table {
   width: 100%;
-  border-collapse: collapse;
+  margin-bottom: 10px;
 }
 
-th {
-  padding: 10px;
-  background-color: #f2f2f2;
-  text-align: left;
-  font-size: 18px;
-}
-
-td, th {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  color:black;
-}
-
-button.delete {
-  padding: 5px 10px;
-  background-color: darkred;
-  color: #fff;
+.btn-delete, .input-container button {
+  background-color: #003366;
+  color: white;
   border: none;
-  border-radius: 4px;
+  padding: 10px 20px;
   cursor: pointer;
-}
-
-button.delete:hover {
-  background-color: red;
 }
 </style>

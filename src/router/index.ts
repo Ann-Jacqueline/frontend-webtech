@@ -1,15 +1,14 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import AboutView from '@/views/AboutView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import CityEntryWithRestData from '@/components/CityEntryWithRestData.vue';
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: () => import('@/components/CityEntryWithRestData.vue') // oder Sie können Ihre App-Komponente direkt importieren
-  }
-
-
-]
+    name: 'Home',
+    component: CityEntryWithRestData,
+  },
+  // Weitere Routen können hier hinzugefügt werden
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
