@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import WAData from '../components/WAData.vue';
+import WAData from '@/components/WAData.vue';
 
 const routes = [
   {
