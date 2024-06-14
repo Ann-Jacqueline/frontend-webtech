@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref, type Ref } from 'vue';
 import axios from 'axios';
+// Inside your <script> tag
+import WeatherWorksLogo from '@/assets/weatherworks ohne backround.png';
+
 
 defineProps<{ title: string }>();
 
@@ -49,7 +52,7 @@ function removeCity(id: number): void {
   <div id="app">
     <!-- Header with Logo and Title -->
     <div class="header">
-      <img src="C:/Users/Ann-Jacqueline/Pictures/weatherworks ohne backround.png" alt="WeatherWorks Logo">
+      <img :src="WeatherWorksLogo" alt="WeatherWorks Logo">
     </div>
     <div class="title">
       <h1 class="text-4xl font-bold">WeatherWorks</h1>
