@@ -1,15 +1,21 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <weatherApp/>
   </div>
 </template>
 
-<script setup lang="ts">
-import { RouterView } from 'vue-router';
+<script>
+import WeatherApp from './components/WAData.vue'
+import CityEntryWithRestData from '@/components/CityEntryWithRestData.vue'
+export default {
+  name: 'App',
+  components: {
+    WeatherApp,
+    CityEntryWithRestData
+  }
+}
 </script>
-
-<style scoped>
-
+<style>
 </style>
 
 

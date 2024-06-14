@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import CityEntryWithRestData from '@/components/CityEntryWithRestData.vue';
+import WAData from '../components/WAData.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: CityEntryWithRestData,
+    component: WAData,
   },
   // Weitere Routen können hier hinzugefügt werden
 ];
