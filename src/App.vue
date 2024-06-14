@@ -9,7 +9,7 @@ import { RouterView } from 'vue-router';
 </script>
 
 <style scoped>
-/* Füge hier die globalen Stile ein */
+
 </style>
 
 

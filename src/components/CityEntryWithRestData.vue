@@ -93,16 +93,23 @@ function removeCity(id: number): void {
 </template>
 
 <style scoped>
-body {
-  background-image: url("../assets/Main Backround.jpg"); /* Pfad zu Ihrem Hintergrundbild */
+#app {
+  background-image: url("../assets/Main Backround.jpg");
   background-size: cover;
-  background-position: center;
-  height: 100vh;
+  background-position: center center;
+  background-repeat: no-repeat;
+  position: absolute;   /* Ändere dies zu 'absolute' oder 'fixed' */
+  top: 0;               /* Füge diese Zeile hinzu */
+  left: 0;              /* Füge diese Zeile hinzu */
+  right: 0;             /* Füge diese Zeile hinzu */
+  bottom: 0;            /* Füge diese Zeile hinzu */
+  min-height: 100vh;
+  min-width: 100vw;
   margin: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  color: white; /* Hinzugefügt, um die Textfarbe weiß zu machen */
+  color: white;
 }
 
 .header {
