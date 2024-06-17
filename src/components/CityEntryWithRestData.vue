@@ -52,7 +52,6 @@ function removeCity(id: number): void {
   <div id="app">
     <!-- Header with Logo and Title -->
     <div class="header">
-      <img :src="WeatherWorksLogo" alt="WeatherWorks Logo">
     </div>
     <div class="title">
       <h1 class="text-4xl font-bold">WeatherWorks</h1>
