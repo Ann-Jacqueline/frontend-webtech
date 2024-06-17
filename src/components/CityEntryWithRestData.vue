@@ -2,7 +2,7 @@
 import { onMounted, ref, type Ref } from 'vue';
 import axios from 'axios';
 // Inside your <script> tag
-import WeatherWorksLogo from '@/assets/images/weatherworks ohne backround.png';
+
 
 
 defineProps<{ title: string }>();

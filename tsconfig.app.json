@@ -24,7 +24,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["vite/client", "webpack-env", "jest"] // Stellen Sie sicher, dass die Typen für Ihre Entwicklungsumgebung passen
+    "types": ["vite/client", "jest", "webpack-env"] // Stellen Sie sicher, dass die Typen für Ihre Entwicklungsumgebung passen
   },
   "include": [
     "src/**/*.ts",
