@@ -2,7 +2,7 @@
 import { onMounted, ref, type Ref } from 'vue';
 import axios from 'axios';
 // Inside your <script> tag
-import WeatherWorksLogo from '@/assets/weatherworks ohne backround.png';
+import WeatherWorksLogo from '@/assets/images/weatherworks ohne backround.png';
 
 
 defineProps<{ title: string }>();
@@ -97,7 +97,7 @@ function removeCity(id: number): void {
 
 <style scoped>
 #app {
-  background-image: url("../assets/Main Backround.jpg");
+  background-image: url("../assets/images/Main Backround.jpg");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;

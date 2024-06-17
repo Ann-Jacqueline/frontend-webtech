@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WAData from "@/components/WAData.vue";
+import WAData from "@/components/WeatherSerach.vue";
 </script>
 
 <template>

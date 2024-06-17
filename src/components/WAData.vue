@@ -1,6 +1,5 @@
 <script>
 import axios from 'axios';
-
 export default {
   data() {
     return {
@@ -16,10 +15,8 @@ export default {
       if (e.key === "Enter" && this.query.trim() !== "") {
         const url = `${this.url_base}weather?q=${this.query}&appid=${this.api_key}&units=metric`;
         console.log("Constructed URL:", url);  // Log the full URL being requested
-
         // Log the state before fetching data
         console.log("Starting API request with query:", this.query);
-
         try {
           const response = await axios.get(url);
           console.log("API response received:", response.data);  // Log the raw response data
@@ -87,21 +84,18 @@ export default {
 </template>
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;900&display=swap");
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
 }
-
 html, body {
   height: 100%; /* Ensure the full height */
   margin: 0; /* Remove default margin */
 }
-
 #app {
-  background-image: url("../assets/Main Backround.jpg"); /* Ensure this path is correct */
+  background-image: url("../assets/images/Main Backround.jpg"); /* Ensure this path is correct */
   background-size: cover;
   background-position: center;
   position: absolute; /* Absolute positioning relative to the nearest positioned ancestor */
@@ -115,7 +109,6 @@ html, body {
   align-items: center;
   box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.4);
 }
-
 .weather-wrap {
   width: 100%; /* Adjust width to match viewport */
   max-width: 375px; /* Keep the max width as before */
@@ -128,7 +121,6 @@ html, body {
     rgba(0, 0, 0, 0.4)
   );
 }
-
 .search-box .search-bar {
   display: block;
   width: 100%;
@@ -144,12 +136,10 @@ html, body {
   border-radius: 10px;
   transition: 0.4s;
 }
-
 .search-box .search-bar:focus {
   box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.25);
   background-color: rgba(255, 255, 255, 0.75);
 }
-
 .location-box .location {
   color: #fff;
   font-size: 32px;
@@ -158,18 +148,15 @@ html, body {
   text-align: center;
   margin-top: 30px;
 }
-
 .location-box .date {
   color: #fff;
   font-size: 20px;
   font-weight: 300;
   text-align: center;
 }
-
 .weather-box {
   text-align: center;
 }
-
 .weather-box .temp {
   display: inline-block;
   padding: 10px 25px;
@@ -183,7 +170,6 @@ html, body {
   box-shadow: 3px 6px rgba(0, 0, 0, 0.25);
   font-style: italic;
 }
-
 .weather-box .weather {
   color: #fff;
   font-size: 48px;

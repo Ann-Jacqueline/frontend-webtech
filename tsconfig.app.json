@@ -1,18 +1,39 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/index.ts", "src/**/*.vue"],
-  "exclude": ["src/**/__tests__/*"],
+  "extends": "@vue/tsconfig/tsconfig.json", // Erweitert die Standard-Vue-TS-Konfiguration
   "compilerOptions": {
-    "composite": true,
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "esnext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "lib": ["esnext", "dom"],
+    "jsx": "preserve",
+    "allowJs": true, // Erlaubt JavaScript Dateien im TypeScript-Projekt
+    "sourceMap": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+      "@/*": ["src/*"]
+    },
+    "types": ["vite/client", "webpack-env", "jest"] // Stellen Sie sicher, dass die Typen für Ihre Entwicklungsumgebung passen
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
 }
