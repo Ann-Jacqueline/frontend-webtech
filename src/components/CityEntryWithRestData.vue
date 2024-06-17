@@ -150,7 +150,7 @@ function removeCity(id: number): void {
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
-.tab-button.active {
+.tab-button {
   background-color: rgba(255, 255, 255, 0.3); /* White transparent */
   color: #003366;
   border-color: #003366;
