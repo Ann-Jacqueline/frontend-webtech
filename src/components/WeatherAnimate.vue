@@ -2,12 +2,13 @@
   <div>
     <div
       class="weather-animate"
-      :class="[
-      {'weather-rain': getWeatherMain.info === 'Rain'},
-      {'weather-snow': getWeatherMain.info === 'Snow'},
-      {'weather-clear': getWeatherMain.info === 'Clear'},
-      {'weather-clouds': getWeatherMain.info === 'Clouds'},
-      {'error': isError}]"
+      :class="{
+        'weather-rain': getWeatherMain.info === 'Rain',
+        'weather-snow': getWeatherMain.info === 'Snow',
+        'weather-clear': getWeatherMain.info === 'Clear',
+        'weather-clouds': getWeatherMain.info === 'Clouds',
+        'error':  getError
+      }"
     ></div>
   </div>
 </template>
@@ -43,9 +44,7 @@ export default {
     left: 0;
     width: 100%;
     height: 100vh;
-    background-image: linear-gradient(-45deg,
-    var(--grayColor),
-    var(--darkColor));
+    background-image: linear-gradient(-45deg, var(--grayColor), var(--darkColor));
   }
 }
 

@@ -15,25 +15,24 @@
       <span>{{ getWeatherMain.temp | round()() }}</span>
       <sup>&deg;</sup>
     </div>
-    <div class="weather-description">{{getWeatherMain.description}}</div>
+    <div class="weather-description">{{ getWeatherMain.description }}</div>
     <p></p>
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import { round } from '@popperjs/core/lib/utils/math'
+import { round } from '@popperjs/core/lib/utils/math';
 
 export default {
   methods: {
     round() {
-      return round
+      return round;
     }
   },
   data() {
     return {};
   },
-
   computed: {
     ...mapGetters(["getWeatherMain"])
   }
@@ -58,7 +57,7 @@ export default {
         align-items: center;
         justify-content: center;
         border-radius: 100%;
-        box-shadow: 0 0 40px fade(black, 20);
+        box-shadow: 0 0 40px #000;
         background-color: #fff;
         margin: 40px 0;
         span {
@@ -68,7 +67,7 @@ export default {
           position: relative;
         }
         sup {
-          position: relative;
+          position:relative;
           top: -21px;
           font-size: 40px;
         }
@@ -81,8 +80,8 @@ export default {
         height: 110px;
         background-repeat: no-repeat;
         background-size: 100%;
-        filter: drop-shadow(1px 1px 0 fade(black, 3))
-        drop-shadow(-5px -5px 0 fade(black, 8));
+        filter: drop-shadow(1px 1px 0 #000)
+        drop-shadow(-5px -5px 0 #000);
       }
       &-feelsLike,
       &-description {
@@ -99,7 +98,6 @@ export default {
     }
   }
 }
-
 @media (max-height: 767px) {
   .weather-main {
     margin-top: 30px;
