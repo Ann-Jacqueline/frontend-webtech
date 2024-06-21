@@ -5,7 +5,11 @@
       <h5>Previously Searched Cities:</h5>
       <ul>
         <li v-for="city in cityHistory" :key="city.id">
-          {{ city.name }} - {{ city.description }}
+          <div>{{ city.name }} - {{ city.country }}</div>
+          <div>{{ city.description }}</div>
+          <div>Temperatur: {{ city.temp }}°C</div>
+          <div>Datum: {{ city.date }}</div>
+          <div>Lokalzeit: {{ city.localTime }}</div>
           <button @click="removeCity(city.id)">Delete</button>
         </li>
       </ul>
@@ -13,6 +17,7 @@
     <button @click="backToSearch" class="back-button">Zurück zur Suche</button>
   </div>
 </template>
+
 
 
 <script setup>

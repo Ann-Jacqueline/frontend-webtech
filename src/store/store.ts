@@ -36,8 +36,12 @@ interface CityHistoryEntry {
   id: number;
   name: string;
   description: string;
-
+  country: string;  // Hinzufügen des Landes
+  temp: number; // Aktuelle Temperatur
+  date: string; // Aktuelles Datum
+  localTime: string; // Lokale Zeit basierend auf der Zeitzone
 }
+
 
 
 interface State {
@@ -54,7 +58,7 @@ interface State {
   userName?: string;
 }
 
-// Vuex Store erstellen
+
 // Vuex Store erstellen
 const store = createStore<State>({
   state: {
@@ -96,7 +100,6 @@ const store = createStore<State>({
       state.search = search.toLowerCase();
     },
     SET_WEATHER_DATA: (state, data) => {
-      // Aktualisieren der Wetterdaten
       state.weatherData = {
         name: data.name,
         temp: data.main.temp,
@@ -113,22 +116,23 @@ const store = createStore<State>({
         pressure: data.main.pressure,
         visibility: data.visibility
       };
-      // Aktualisieren der Koordinaten- und Systemdaten
       state.coord = data.coord;
-      state.sys = {
-        type: data.sys.type,
-        id: data.sys.id,
-        country: data.sys.country,
-        sunrise: data.sys.sunrise,
-        sunset: data.sys.sunset
-      };
+      state.sys = data.sys;
       state.timezone = data.timezone;
 
-      // Hinzufügen der neuen Stadt zur Historie
+      const currentDate = new Date();
+      const timezoneOffset = (state.timezone || 0) * 1000;
+      const localTimeOffset = new Date().getTimezoneOffset() * 60000;
+      const localDate = new Date(new Date().getTime() + timezoneOffset + localTimeOffset);
+
       state.cityHistory.push({
         id: Date.now(),
         name: data.name,
-        description: data.weather[0].description
+        description: data.weather[0].description,
+        country: data.sys.country,
+        temp: data.main.temp,
+        date: currentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        localTime: localDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }) + "h"
       });
 
       // Speichern der aktualisierten Stadtgeschichte im localStorage
