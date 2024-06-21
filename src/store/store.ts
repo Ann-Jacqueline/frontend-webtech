@@ -12,7 +12,7 @@ interface WeatherData {
   description?: string;
   icon?: string;
   info?: string;
-  wind?: { speed: number; deg?: number; gust?: number };
+  wind?: { speed: number};
   humidity?: number;
   clouds?: { all: number };
   country?: string;
@@ -32,6 +32,13 @@ interface Sys {
   sunrise?: number;
   sunset?: number;
 }
+interface CityHistoryEntry {
+  id: number;
+  name: string;
+  description: string;
+
+}
+
 
 interface State {
   apiBase: string;
@@ -43,8 +50,11 @@ interface State {
   coord: Coord;
   sys: Sys;
   timezone?: number;
+  cityHistory: CityHistoryEntry[];
+  userName?: string;
 }
 
+// Vuex Store erstellen
 // Vuex Store erstellen
 const store = createStore<State>({
   state: {
@@ -56,7 +66,8 @@ const store = createStore<State>({
     isError: false,
     coord: {},
     sys: {},
-    timezone: 0
+    timezone: 0,
+    cityHistory: JSON.parse(localStorage.getItem('cityHistory') || '[]'),
   },
   getters: {
     getWeatherMain: (state) => {
@@ -64,21 +75,28 @@ const store = createStore<State>({
       return { temp, feelsLike, description, info, icon };
     },
     getWeatherInfo: (state) => {
-      const { wind, clouds, humidity } = state.weatherData;
-      return { wind, clouds, humidity };
+      return {
+        windSpeed: state.weatherData.wind ? state.weatherData.wind.speed.toFixed(2) + ' m/s' : 'N/A',
+        clouds: state.weatherData.clouds ? state.weatherData.clouds.all + '%' : 'N/A',
+        humidity: state.weatherData.humidity ? state.weatherData.humidity + '%' : 'N/A'
+      };
     },
     getWeatherCountry: (state) => state.weatherData.country,
     isSearched: (state) => state.search !== "",
     getError: (state) => state.isError,
     getCoord: (state) => state.coord,
     getSys: (state) => state.sys,
-    getTimezone: (state) => state.timezone
+    getTimezone: (state) => state.timezone,
+    getUserName: (state) => state.userName,
+    getCityHistory: (state) => state.cityHistory
+
   },
   mutations: {
-    SET_SEARCH: (state, search: string) => {
+    SET_SEARCH: (state, search) => {
       state.search = search.toLowerCase();
     },
     SET_WEATHER_DATA: (state, data) => {
+      // Aktualisieren der Wetterdaten
       state.weatherData = {
         name: data.name,
         temp: data.main.temp,
@@ -95,6 +113,7 @@ const store = createStore<State>({
         pressure: data.main.pressure,
         visibility: data.visibility
       };
+      // Aktualisieren der Koordinaten- und Systemdaten
       state.coord = data.coord;
       state.sys = {
         type: data.sys.type,
@@ -104,13 +123,34 @@ const store = createStore<State>({
         sunset: data.sys.sunset
       };
       state.timezone = data.timezone;
+
+      // Hinzufügen der neuen Stadt zur Historie
+      state.cityHistory.push({
+        id: Date.now(),
+        name: data.name,
+        description: data.weather[0].description
+      });
+
+      // Speichern der aktualisierten Stadtgeschichte im localStorage
+      localStorage.setItem('cityHistory', JSON.stringify(state.cityHistory));
     },
-    SET_ERROR: (state, value: boolean) => {
+    SET_USER_NAME: (state, userName) => { // Mutation to set userName
+      state.userName = userName;
+    },
+    // Weitere Mutationen
+    SET_ERROR: (state, value) => {
       state.isError = value;
     },
+    REMOVE_CITY_HISTORY: (state, id) => {
+      const index = state.cityHistory.findIndex(city => city.id === id);
+      if (index !== -1) {
+        state.cityHistory.splice(index, 1);
+        localStorage.setItem('cityHistory', JSON.stringify(state.cityHistory));  // Update localStorage sofort
+      }
+    }
   },
   actions: {
-    async fetchWeatherData({ commit, state }, search: string) {
+    async fetchWeatherData({ commit, state }, search) {
       try {
         commit("SET_SEARCH", search);
         const url = `${state.apiBase}weather?q=${search}&appid=${state.apiKey}&units=metric`;
@@ -122,6 +162,12 @@ const store = createStore<State>({
         commit("SET_ERROR", true);
         commit("SET_WEATHER_DATA", {});
       }
+    },
+    setUser({ commit }, userName) { // Action to set userName
+      commit("SET_USER_NAME", userName);
+    },
+    removeCity({ commit }, id) {
+      commit('REMOVE_CITY_HISTORY', id);
     }
   }
 });

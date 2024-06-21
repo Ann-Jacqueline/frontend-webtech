@@ -1,5 +1,10 @@
 <template>
   <div id="app" class="app">
+    <nav id="nav" class="nav">
+      <router-link class="Tab" to="/settings">Settings</router-link>
+      <router-link class="Tab" to="/account">Your Account</router-link>
+      <router-link class="Tab" to="/recommendations">Weather Recommendations</router-link>
+    </nav>
     <transition name="fade" mode="out-in" appear>
       <div class="card">
         <WeatherSearch />
@@ -8,13 +13,6 @@
       </div>
     </transition>
     <WeatherAnimate />
-    <div class="footer-text">
-      <a href="https://github.com/Ann-Jacqueline/frontend-webtech/" target="_blank" class="link">
-        <span>
-          Github Repository WebTech von Ann-Jacqueline und Emilie<br>
-          Dozenten: Wider/Larisch
-        </span></a>
-  </div>
   </div>
 </template>
 <script>
@@ -25,7 +23,7 @@ import WeatherAnimate from "@/components/WeatherAnimate.vue";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  name: "App",
+  name: "WeatherEntry",
   components: {
     WeatherSearch,
     WeatherMain,
@@ -33,7 +31,8 @@ export default {
     WeatherAnimate
   },
   computed: {
-    ...mapGetters(["isSearched"])
+    ...mapGetters(["isSearched", "getUserName"]),
+
   },
   methods: {
     ...mapActions(["fetchWeatherData"]),
@@ -48,49 +47,64 @@ export default {
 </script>
 <style lang="less">
 @import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,700;0,800;0,900;1,300;1,500&display=swap");
+
 :root {
-  --cardWidth: 70%;  // Erhöhte Breite für größere Präsenz
+  --cardWidth: 100vw; // Reduzierte Breite für größere Präsenz
   --darkColor: #666;
+  --cardHeight: 75vh;
   --grayColor: #999;
-  --cardBgColor: #f1f1f1;
+  --cardBgColor: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0)); // Transparenter Gradient
   --cloudAnimateTime: 150s;
   --clearAnimationTime: 120s;
   --snowAnimateTime: 15s;
   --rainAnimateTime: 70s;
 }
-.fade-enter-active, .fade-leave-active {
-  transition: all 1s;
-}
-.fade-enter, .fade-leave-to {
-  opacity: 0;
-  transform: scale(0.5);
-}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Jost", sans-serif;
 }
+
 body {
   background-color: #000;
   overflow: hidden;
 }
+
 .app {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
 }
+
 .card {
   max-width: var(--cardWidth);
-  width: 100%;
+  height: var(--cardHeight);
   padding: 40px;
-  margin: 20px;
+  margin-top: 200px; // Zentriert die Karte in der App
+  margin-bottom: 100px;
   border-radius: 20px;
   box-shadow: 0 0 70px #000;
-  z-index: 9999;
-  background-color: var(--cardBgColor);
+  z-index: 999;
+  background: var(--cardBgColor); // Verwendet den definierten Gradienten
+  color: black; // Textfarbe innerhalb der Karte
 }
+
+
+.nav {
+  z-index: 1000; // Stellen Sie sicher, dass Text und Navigation oberhalb der anderen Elemente sind
+  color: black; // Schwarze Schriftfarbe für bessere Lesbarkeit
+  position: fixed;
+  width: 100%;
+  text-align: center;
+  top: 100px;
+  margin-top: 0;
+}
+
+
 .footer-text {
   position: absolute;
   bottom: 30px;
@@ -98,23 +112,19 @@ body {
   right: 0;
   margin: auto;
   text-align: center;
+  z-index: 1000;
+
   .link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
     color: #fff;
     font-weight: 500;
     text-shadow: 0 2px 3px #000;
-    span {
-      font-size: 18px;
-      margin-left: 5px;
-    }
+
     &:hover {
       text-decoration: underline;
     }
   }
 }
+
 @media (max-width: 480px) {
   .card {
     padding: 30px;

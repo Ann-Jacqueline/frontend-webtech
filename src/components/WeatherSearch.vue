@@ -1,4 +1,5 @@
 <template>
+
   <div class="weather-search">
     <input
       type="text"
@@ -12,7 +13,6 @@
     <div class="error" v-if="getError">No results found! Try again.</div>
   </div>
 </template>
-
 <script>
 import { mapActions, mapGetters } from "vuex";
 
@@ -43,9 +43,6 @@ export default {
   }
 };
 </script>
-
-
-
 <style lang="less" scoped>
 .weather-search {
   position: relative;
@@ -61,7 +58,7 @@ export default {
     border-radius: 100px;
     outline: none;
     background-color: transparent;
-    font-size: 16px;
+    font-size: 20px;
     padding: 0 25px;
     transition: all 0.4s;
 
@@ -84,12 +81,19 @@ export default {
   .country {
     flex-grow: 1;
     text-align: right;
-    color: var(--grayColor);
+    color: black;
+    font-size: 20px;
+    padding-right: 80px;
+    margin-right: 100px;
+    margin-left:20px;
+    font-weight: 600;
   }
 
   .local-time {
-    color: var(--grayColor);
-    margin-left: 20px;
+    font-size: 20px;
+    color: black;
+    margin-left: 50px;
+    font-weight: 600;
   }
 
   .error {

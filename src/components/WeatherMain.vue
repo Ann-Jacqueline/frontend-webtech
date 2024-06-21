@@ -1,19 +1,14 @@
 <template>
   <div class="weather-main">
     <div class="weather-feelsLike">
-      Feels like
-      <strong>
-        {{ getWeatherMain.feelsLike | round()() }}
-        <sup>&deg;</sup>
-      </strong>
+      Feels like <strong>{{ round(getWeatherMain.feelsLike) }}<sup>°</sup></strong>
     </div>
     <div class="weather-temp">
       <div
         class="weather-icon"
         :style="[getWeatherMain.icon ? {'background-image': 'url(https://openweathermap.org/img/wn/'+getWeatherMain.icon+'d@2x.png)'}: {}]"
       ></div>
-      <span>{{ getWeatherMain.temp | round()() }}</span>
-      <sup>&deg;</sup>
+      <span>{{ round(getWeatherMain.temp) }}</span><sup>°</sup>
     </div>
     <div class="weather-description">{{ getWeatherMain.description }}</div>
     <p></p>
@@ -22,12 +17,12 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { round } from '@popperjs/core/lib/utils/math';
+
 
 export default {
   methods: {
-    round() {
-      return round;
+    round(value) {
+      return Math.round(value);
     }
   },
   data() {
@@ -85,8 +80,8 @@ export default {
       }
       &-feelsLike,
       &-description {
-        font-size: 18px;
-        color: var(--darkColor);
+        font-size: larger;
+        color: black;
         text-transform: capitalize;
         sup {
           position: relative;
