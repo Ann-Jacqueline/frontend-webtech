@@ -56,6 +56,7 @@ interface State {
   timezone?: number;
   cityHistory: CityHistoryEntry[];
   userName?: string;
+  showNav: boolean;
 }
 
 
@@ -72,6 +73,7 @@ const store = createStore<State>({
     sys: {},
     timezone: 0,
     cityHistory: JSON.parse(localStorage.getItem('cityHistory') || '[]'),
+    showNav: true,
   },
   getters: {
     getWeatherMain: (state) => {
@@ -151,7 +153,10 @@ const store = createStore<State>({
         state.cityHistory.splice(index, 1);
         localStorage.setItem('cityHistory', JSON.stringify(state.cityHistory));  // Update localStorage sofort
       }
-    }
+    },
+    setShowNav(state, value) {
+      state.showNav = value;
+    },
   },
   actions: {
     async fetchWeatherData({ commit, state }, search) {
@@ -167,8 +172,11 @@ const store = createStore<State>({
         commit("SET_WEATHER_DATA", {});
       }
     },
-    setUser({ commit }, userName) { // Action to set userName
-      commit("SET_USER_NAME", userName);
+    setUser({ commit }, userName) {
+      return new Promise((resolve) => {
+        commit("SET_USER_NAME", userName);
+        resolve(userName);
+      });
     },
     removeCity({ commit }, id) {
       commit('REMOVE_CITY_HISTORY', id);

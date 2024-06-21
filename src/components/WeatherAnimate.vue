@@ -1,3 +1,12 @@
+<script>
+import { mapGetters } from "vuex";
+
+export default {
+  computed: {
+    ...mapGetters(["getWeatherMain", "getError"])
+  }
+};
+</script>
 <template>
   <div>
     <div
@@ -11,16 +20,6 @@
     ></div>
   </div>
 </template>
-
-<script>
-import { mapGetters } from "vuex";
-
-export default {
-  computed: {
-    ...mapGetters(["getWeatherMain", "getError"])
-  }
-};
-</script>
 
 <style lang="less" scoped>
 .weather-animate {

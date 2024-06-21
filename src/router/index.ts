@@ -1,9 +1,10 @@
+import { createRouter, createWebHistory } from 'vue-router';
 import WeatherEntry from '@/components/WeatherEntry.vue';
 import UserAccount from '@/components/WeatherAccountManager.vue';
 import WeatherStartPage from '@/components/WeatherStartPage.vue'; // Angenommen, diese Komponente existiert
 // import Settings from '@/components/Settings.vue';
 // import WeatherRecommendations from '@/components/WeatherRecommendations.vue';
-import { createRouter, createWebHistory } from 'vue-router'
+
 
 
 const router = createRouter({

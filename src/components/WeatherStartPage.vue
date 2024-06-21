@@ -7,15 +7,13 @@ const userName = ref('');
 const router = useRouter();
 const store = useStore();
 
-const navigateToWeather = () => {
+const navigateToWeather = async () => {
   if (userName.value.trim()) {
-    // Hier wird die Vuex Aktion aufgerufen, um den Benutzernamen zu speichern.
-    store.dispatch('setUser', userName.value);
-    router.push('/weather');
+    await store.dispatch('setUser', userName.value);
+    await router.push('/weather');
   }
 };
 </script>
-
 
 <template>
   <div class="start-page">
@@ -33,7 +31,6 @@ const navigateToWeather = () => {
   </div>
 </template>
 
-
 <style scoped lang="less">
 .start-page {
   display: flex;
@@ -46,9 +43,9 @@ const navigateToWeather = () => {
   background-size: cover;
   text-align: center;
   position: relative;
+  z-index: 1020; // Hintergrund ist über der Navigationsleiste
 
   .fog-animation {
-    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -94,13 +91,29 @@ const navigateToWeather = () => {
     align-items: center;
     justify-content: center;
   }
-
   .footer-text {
     position: absolute;
-    bottom: 20px;
-    width: 100%;
+    bottom: 30px;
+    left: 0;
+    right: 0;
+    margin: auto;
     text-align: center;
-    color: white;
+    .link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      text-shadow: 0 2px 3px fade(black, 20);
+      span {
+        font-size: 18px;
+        margin-left: 5px;
+      }
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 }
 

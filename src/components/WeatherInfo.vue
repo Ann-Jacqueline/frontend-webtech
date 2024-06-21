@@ -39,21 +39,25 @@ export default {
   color: black;
   padding-top: 20px;
 
-
   .weather-item {
     display: flex;
-    align-items:center;
-    color:black;
+    align-items: center;
+    color: black;
     font-size: larger;
+    background-color: rgba(68, 100, 106, 0.44); /* Leicht transparenter grüner Hintergrund */
+    padding: 10px; /* Padding für bessere Optik */
+    border-radius: 5px; /* Abgerundete Ecken */
+    margin: 5px; /* Abstand zwischen den Elementen */
 
     .value {
       margin-left: 5px;
       font-weight: 600;
     }
     i {
-      font-size: 24px; /* Größere Größe der Icons */
-      font-weight: bolder; /* Dickeres Aussehen der Icons */
+      font-size: 30px; /* Größere Größe der Icons */
+      font-weight: 800; /* Dickeres Aussehen der Icons */
     }
   }
 }
+
 </style>

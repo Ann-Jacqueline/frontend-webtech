@@ -1,20 +1,3 @@
-<template>
-  <div class="weather-main">
-    <div class="weather-feelsLike">
-      Feels like <strong>{{ round(getWeatherMain.feelsLike) }}<sup>°</sup></strong>
-    </div>
-    <div class="weather-temp">
-      <div
-        class="weather-icon"
-        :style="[getWeatherMain.icon ? {'background-image': 'url(https://openweathermap.org/img/wn/'+getWeatherMain.icon+'d@2x.png)'}: {}]"
-      ></div>
-      <span>{{ round(getWeatherMain.temp) }}</span><sup>°</sup>
-    </div>
-    <div class="weather-description">{{ getWeatherMain.description }}</div>
-    <p></p>
-  </div>
-</template>
-
 <script>
 import { mapGetters } from "vuex";
 
@@ -33,6 +16,22 @@ export default {
   }
 };
 </script>
+<template>
+  <div class="weather-main">
+    <div class="weather-feelsLike">
+      Feels like <strong>{{ round(getWeatherMain.feelsLike) }}<sup>°</sup></strong>
+    </div>
+    <div class="weather-temp">
+      <div
+        class="weather-icon"
+        :style="[getWeatherMain.icon ? {'background-image': 'url(https://openweathermap.org/img/wn/'+getWeatherMain.icon+'d@2x.png)'}: {}]"
+      ></div>
+      <span>{{ round(getWeatherMain.temp) }}</span><sup>°</sup>
+    </div>
+    <div class="weather-description">{{ getWeatherMain.description }}</div>
+    <p></p>
+  </div>
+</template>
 
 <style lang="less" scoped>
 .weather {
@@ -80,7 +79,8 @@ export default {
       }
       &-feelsLike,
       &-description {
-        font-size: larger;
+        font-size: 20px;
+        font-weight: bolder;
         color: black;
         text-transform: capitalize;
         sup {

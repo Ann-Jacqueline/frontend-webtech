@@ -1,5 +1,4 @@
 <template>
-
   <div class="weather-search">
     <input
       type="text"
@@ -61,6 +60,8 @@ export default {
     font-size: 20px;
     padding: 0 25px;
     transition: all 0.4s;
+    font-weight: 600;
+
 
     &::placeholder {
       color: #000;
