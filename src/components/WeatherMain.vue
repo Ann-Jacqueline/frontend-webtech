@@ -1,35 +1,58 @@
-<script>
-import { mapGetters } from "vuex";
+<script setup>
+import { computed, ref } from 'vue';
+import { useStore } from 'vuex';
+import { round } from '@popperjs/core/lib/utils/math.js'
 
+const store = useStore();
+const showDropdown = ref(false);
 
-export default {
-  methods: {
-    round(value) {
-      return Math.round(value);
-    }
-  },
-  data() {
-    return {};
-  },
-  computed: {
-    ...mapGetters(["getWeatherMain"])
+const weatherMain = computed(() => {
+  let main = store.getters.getWeatherMain;
+  return {
+    ...main,
+    temp: convertTemperature(main.temp),
+    feelsLike: convertTemperature(main.feelsLike)
+  };
+});
+const tempUnit = computed(() => store.getters.getTempUnit);
+
+function convertTemperature(temp) {
+  if (tempUnit.value === 'F') {
+    return Math.round(temp * 9 / 5 + 32);
   }
-};
+  return Math.round(temp);
+}
+
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value;
+}
+
+function toggleTempUnit(unit) {
+  store.commit('TOGGLE_TEMP_UNIT');
+  toggleDropdown();
+}
 </script>
 <template>
   <div class="weather-main">
+    <div class="settings-dropdown">
+      <i class="bi bi-gear-fill" @click="toggleDropdown"></i>
+      <ul v-if="showDropdown">
+        <li @click="toggleTempUnit('C')">Celsius</li>
+        <li @click="toggleTempUnit('F')">Fahrenheit</li>
+      </ul>
+      <span class="settings-text">Settings</span>
+    </div>
     <div class="weather-feelsLike">
-      Feels like <strong>{{ round(getWeatherMain.feelsLike) }}<sup>°</sup></strong>
+      Feels like <strong>{{ round(weatherMain.feelsLike) }}<sup>°</sup></strong>
     </div>
     <div class="weather-temp">
       <div
         class="weather-icon"
-        :style="[getWeatherMain.icon ? {'background-image': 'url(https://openweathermap.org/img/wn/'+getWeatherMain.icon+'d@2x.png)'}: {}]"
+        :style="weatherMain.icon ? {'background-image': 'url(https://openweathermap.org/img/wn/'+ weatherMain.icon +'d@2x.png)'} : {}"
       ></div>
-      <span>{{ round(getWeatherMain.temp) }}</span><sup>°</sup>
+      <span>{{ round(weatherMain.temp) }}</span><sup>°{{ tempUnit }}</sup>
     </div>
-    <div class="weather-description">{{ getWeatherMain.description }}</div>
-    <p></p>
+    <div class="weather-description">{{ weatherMain.description }}</div>
   </div>
 </template>
 
@@ -103,5 +126,61 @@ export default {
       margin: 30px 0;
     }
   }
+  .settings-dropdown {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .settings-dropdown i {
+    cursor: pointer;
+    display: inline-block;
+    padding: 10px;
+    font-size: 24px; /* Größeres Icon */
+    color: #151414;
+    position: fixed;
+    top:1.5vh;
+    right:9vw;
+  }
+  .settings-text {
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle; /* Zentriert den Text vertikal zum Icon */
+    font-size: 2.5vh; /* Einstellung der Textgröße */
+    color: #151414; /* Textfarbe */
+    position: fixed;
+    top:3.5vh;
+    right:12vw;
+    font-weight:bolder;
+  }
+  .settings-dropdown ul {
+    display: none; /* Versteckt das Dropdown-Menü zunächst */
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    padding: 10px 0;
+    position: fixed;
+    top:3vh;
+    right:9vw; /* Direkt unter dem Icon */
+    z-index: 150; /* Stellt sicher, dass das Dropdown über anderen Elementen schwebt */
+  }
+  .settings-dropdown ul li {
+    cursor: pointer;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block; /* Stellt sicher, dass jedes Element die volle Breite des Dropdowns einnimmt */
+    color: black;
+    &:hover {
+      background-color: #ddd; // Ändert die Hintergrundfarbe beim Hover
+    }
+  }
+  .settings-dropdown:hover ul {
+    display: block;
+  }
+  @keyframes dropdownFade {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .settings-dropdown ul {
+    animation: dropdownFade 0.3s ease-out forwards;}
 }
 </style>

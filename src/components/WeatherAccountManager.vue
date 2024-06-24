@@ -7,6 +7,14 @@
         <button @click="logOut" class="logout-button">Log Out</button>
       </div>
       <nav class="navigation">
+        <div class="settings-dropdown">
+          <i class="bi bi-gear-fill" @click="toggleDropdown"></i> <!-- Bootstrap-Icon für Einstellungen -->
+          <ul v-if="showDropdown">
+            <li @click="toggleTempUnit('C')">Celsius</li>
+            <li @click="toggleTempUnit('F')">Fahrenheit</li>
+          </ul>
+          <span class="settings-text">Settings</span>
+        </div>
         <router-link to="/weather" class="nav-item-Search">Weather Search</router-link>
         <router-link to="/recommendations" class="nav-item-Rec">Recommendations</router-link>
       </nav>
@@ -39,18 +47,32 @@
 </template>
 
 <script setup>
-import { computed, watchEffect } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
 const store = useStore();
 const router = useRouter();
-
+const tempUnit = computed(() => store.getters.getTempUnit);
 const userName = computed(() => store.getters.getUserName);
+
+// Konvertiere die Temperatur basierend auf der gewählten Einheit
+function convertTemperature(temp, unit) {
+  return unit === 'C' ? Math.round(temp) : Math.round(temp * 9 / 5 + 32);
+}
+
+// Stadtverlauf mit dynamisch umgerechneten Temperaturen
 const cityHistory = computed(() => {
   const history = store.getters.getCityHistory;
-  return typeof history === 'string' ? [] : history;
+  if (typeof history === 'string') {
+    return [];
+  }
+  return history.map(city => ({
+    ...city,
+    temp: convertTemperature(city.temp, tempUnit.value)
+  }));
 });
+
 const noCitiesMessage = computed(() => typeof store.getters.getCityHistory === 'string' ? store.getters.getCityHistory : '');
 const defaultSearch = computed(() => store.state.defaultSearch);
 
@@ -59,22 +81,42 @@ watchEffect(() => {
   console.log('Default Search Changed:', defaultSearch.value);
 });
 
+// Zustand für das Dropdown-Menü
+const showDropdown = ref(false);
+
+// Funktion zum Umschalten des Dropdown-Menüs
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value;
+}
+
+// Funktion zum Umschalten der Temperatureinheit
+function toggleTempUnit() {
+  store.commit('TOGGLE_TEMP_UNIT');
+  // Aktualisiere die Stadtvorlauftemperaturen nach der Einheitsumschaltung
+  showDropdown.value = false;
+}
+
+// Funktion zum Ausloggen
 function logOut() {
   store.dispatch('logOut').then(() => {
     router.push('/');
   });
 }
 
-const setAsDefault = (cityName) => {
+// Funktion zum Setzen der Standardstadt
+function setAsDefault(cityName) {
   store.dispatch('pinCityAsDefault', cityName).then(() => {
     console.log("Default city set to:", cityName);
   });
 }
 
-const removeCity = (id) => {
+// Funktion zum Entfernen einer Stadt
+function removeCity(id) {
   store.dispatch('removeCity', id);
-};
+}
 </script>
+
+
 
 
 <style scoped>
@@ -213,7 +255,7 @@ const removeCity = (id) => {
 }
 .user-name {
   color: #333;
-  font-size: 2vh; /* Schriftgröße abhängig von der Bildschirmhöhe */
+  font-size: 2.5vh; /* Schriftgröße abhängig von der Bildschirmhöhe */
   position: fixed;
   top: 13vh;
   left:6vw;
@@ -241,12 +283,83 @@ const removeCity = (id) => {
 
 .navigation {
   display: flex;
-  position: absolute;
-  right: 5vw; /* Rechts bündig mit Abstand vom Rand */
-  top: 20vh; /* Weiter unten positioniert */
+  align-items: center;
+  justify-content: flex-start; /* Justiert alle Navigations-Elemente links */
+  position: relative;
+  width: 100%;
+  padding: 1vw;
 }
 
+.settings-dropdown {
+  position: relative; /* Setzt die Position relativ zum Navigationsbereich */
+  display: inline-block; /* Ermöglicht die Inline-Positionierung des Icons und des Textes */
+  cursor: pointer;
+  margin-right: 20px; /* Abstand zum nächsten Navigationslink */
+}
 
+.settings-text {
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: middle; /* Zentriert den Text vertikal zum Icon */
+  font-size: 3vh; /* Einstellung der Textgröße */
+  color: #151414; /* Textfarbe */
+  position: fixed;
+  top:84.5vh;
+  left:5vw;
+}
+
+.settings-dropdown i {
+  font-size: 26px; /* Größeres Icon */
+  color: #151414;
+  position: fixed;
+  top:83vh;
+  left:12vw;
+}
+
+.settings-dropdown ul {
+  display: none; /* Versteckt das Dropdown-Menü zunächst */
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  padding: 10px 0;
+  position: fixed;
+  top:83vh;
+  left:12vw; /* Direkt unter dem Icon */
+  z-index: 150; /* Stellt sicher, dass das Dropdown über anderen Elementen schwebt */
+}
+
+.settings-dropdown ul li {
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block; /* Stellt sicher, dass jedes Element die volle Breite des Dropdowns einnimmt */
+  color: black;
+}
+
+.settings-dropdown ul li:hover {
+  background-color: #ddd;
+}
+
+.settings-dropdown i {
+  cursor: pointer;
+  display: inline-block;
+  color: #151414;
+  padding: 10px;
+  z-index:102;
+}
+
+.settings-dropdown:hover ul {
+  display: block; /* Zeigt das Dropdown-Menü beim Hover über das Zahnrad-Icon */
+}
+
+/* Optional: Hinzufügen einer einfachen Fade-In Animation für das Dropdown */
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.settings-dropdown ul {
+  animation: dropdownFade 0.3s ease-out forwards;
+}
 .dashboard-title {
   font-size: 5vh; /* Größere Schrift abhängig von der Bildschirmhöhe */
   color: #0f333e;
@@ -271,7 +384,7 @@ const removeCity = (id) => {
   align-items: center; /* Zentriert die Liste */
   width: 60vw; /* Breite abhängig von der Bildschirmbreite */
   margin-left: 31%; /* Horizontal zentriert */
-  margin-top: 14%; /* Vertikaler Abstand vom oberen Rand, abhängig von der Bildschirmhöhe */
+  margin-top: 11.5%; /* Vertikaler Abstand vom oberen Rand, abhängig von der Bildschirmhöhe */
 }
 
 .previously-searched li {

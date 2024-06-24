@@ -59,6 +59,7 @@ interface State {
   cityHistory: CityHistoryEntry[];
   userName?: string;
   showNav: boolean;
+  tempUnit: string; // 'C' für Celsius, 'F' für Fahrenheit
 }
 
 
@@ -76,7 +77,8 @@ const store = createStore<State>({
     timezone: 0,
     cityHistory: JSON.parse(localStorage.getItem('cityHistory') || '[]'),
     userName: localStorage.getItem('userName') || "",
-    showNav: true
+    showNav: true,
+    tempUnit: 'C', // Standardmäßig Celsius
   },
   getters: {
     getWeatherMain: (state) => {
@@ -97,6 +99,7 @@ const store = createStore<State>({
     getSys: (state) => state.sys,
     getTimezone: (state) => state.timezone,
     getUserName: (state) => state.userName,
+    getTempUnit: (state) => state.tempUnit,
     getCityHistory: (state) => {
       if (state.cityHistory.length === 0) {
         return "You haven't searched any cities yet.";
@@ -106,16 +109,16 @@ const store = createStore<State>({
 
   },
   mutations: {
+    TOGGLE_TEMP_UNIT(state) {
+      state.tempUnit = state.tempUnit === 'C' ? 'F' : 'C'; // Umschalten zwischen 'C' und 'F'
+    },
     SET_DEFAULT_SEARCH(state, cityName) {
-      // Check for existing city in the history
       const existingIndex = state.cityHistory.findIndex(city => city.name === cityName);
       if (existingIndex !== -1) {
-        // If the city exists, update it as the most recent entry
         const existingCity = state.cityHistory[existingIndex];
-        state.cityHistory.splice(existingIndex, 1); // Remove the existing city
-        state.cityHistory.unshift(existingCity); // Add it back at the start
+        state.cityHistory.splice(existingIndex, 1);
+        state.cityHistory.unshift(existingCity);
       } else {
-        // If it doesn't exist, add new city data
         state.cityHistory.unshift({
           id: Date.now(),
           name: cityName,
@@ -126,36 +129,35 @@ const store = createStore<State>({
           localTime: new Date().toLocaleTimeString(),
         });
       }
-      // Update default search and save to local storage
       state.defaultSearch = cityName;
       localStorage.setItem('defaultSearch', cityName);
       localStorage.setItem('cityHistory', JSON.stringify(state.cityHistory));
     },
     ADD_CITY_HISTORY(state, newCity) {
-      // Überprüfung, ob die Stadt bereits vorhanden ist, um Duplikate zu verhindern
       const existingIndex = state.cityHistory.findIndex(city => city.name === newCity.name);
       if (existingIndex !== -1) {
-        state.cityHistory.splice(existingIndex, 1); // Entfernt das ältere Vorkommen, um Duplikate zu vermeiden
+        state.cityHistory.splice(existingIndex, 1);
       }
-      // Aufrechterhaltung eines Limits von 5 Einträgen im Verlauf
       if (state.cityHistory.length >= 5) {
-        state.cityHistory.pop(); // Entfernt den ältesten Eintrag, wenn das Limit erreicht ist
+        state.cityHistory.pop();
       }
       state.cityHistory.unshift(newCity);
       localStorage.setItem('cityHistory', JSON.stringify(state.cityHistory));
     },
     SET_SEARCH(state, search) {
-      // Normalize the search string to lowercase
       state.search = search.toLowerCase();
     },
     SET_WEATHER_DATA(state, data) {
+      const convertTemp = (temp: number): number => {
+        return state.tempUnit === 'C' ? Math.round(temp) : Math.round(temp * 9 / 5 + 32);
+      };
       // Update state with new weather data
       state.weatherData = {
         name: data.name,
-        temp: Math.round(data.main.temp),
-        tempMin: data.main.temp_min,
-        tempMax: data.main.temp_max,
-        feelsLike: data.main.feels_like,
+        temp: convertTemp(data.main.temp),
+        tempMin: convertTemp(data.main.temp_min),
+        tempMax: convertTemp(data.main.temp_max),
+        feelsLike: convertTemp(data.main.feels_like),
         description: data.weather[0].description,
         icon: data.weather[0].icon.substring(0, 2),
         info: data.weather[0].main,
@@ -173,7 +175,6 @@ const store = createStore<State>({
       state.timezone = data.timezone;
     },
     SET_USER_NAME(state, userName) {
-      // Set Username and save to local storage
       state.userName = userName;
       localStorage.setItem('userName', userName);
     },

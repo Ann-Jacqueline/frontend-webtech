@@ -88,7 +88,7 @@ export default {
 :root {
   --cardWidth: 100vw;
   --darkColor: #666;
-  --cardHeight: 75vh;
+  --cardHeight: 85vh;
   --grayColor: #999;
   --cardBgColor: linear-gradient(to bottom, rgba(33, 110, 139, 0), rgba(0, 0, 255, 0));
   --cloudAnimateTime: 150s;
@@ -186,6 +186,9 @@ body {
     color: black;
     font-size: larger;
     font-weight:bolder;
+    background-color: rgba(207, 196, 196, 0.31);
+    padding:10px;
+    border-radius: 5px;
   }
   .user-pic {
     height: 60px;
