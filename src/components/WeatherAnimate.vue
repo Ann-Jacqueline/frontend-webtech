@@ -1,3 +1,21 @@
+
+<template>
+  <div>
+    <div
+      class="weather-animate"
+      :class="[
+  {'weather-rain': getWeatherMain.info === 'Rain' || getWeatherMain.info === 'Drizzle'},
+  {'weather-snow': getWeatherMain.info === 'Snow'},
+  {'weather-clear': getWeatherMain.info === 'Clear'},
+  {'weather-clouds': getWeatherMain.info === 'Clouds'},
+  {'weather-mist': getWeatherMain.info === 'Mist' || getWeatherMain.info === 'Haze' || getWeatherMain.info === 'Smoke' || getWeatherMain.info === 'Dust' || getWeatherMain.info === 'Fog' || getWeatherMain.info === 'Sand' || getWeatherMain.info === 'Ash' || getWeatherMain.info === 'Squall' || getWeatherMain.info === 'Tornado'},
+  {'weather-thunder': getWeatherMain.info === 'Thunderstorm'},
+  {'error': getError}
+]"
+    ></div>
+  </div>
+</template>
+
 <script>
 import { mapGetters } from "vuex";
 
@@ -7,19 +25,6 @@ export default {
   }
 };
 </script>
-<template>
-  <div>
-    <div
-      class="weather-animate"
-      :class="[
-      {'weather-rain': getWeatherMain.info === 'Rain'},
-      {'weather-snow': getWeatherMain.info === 'Snow'},
-      {'weather-clear': getWeatherMain.info === 'Clear' || getWeatherMain.info === 'Mist'},
-      {'weather-clouds': getWeatherMain.info === 'Clouds' || getWeatherMain.info === 'Haze'},
-      {'error': getError}]"
-    ></div>
-  </div>
-</template>
 
 <style lang="less" scoped>
 .weather-animate {
@@ -130,7 +135,7 @@ export default {
   }
 }
 
-// snow weather
+// rain weather
 &.weather-rain {
   background-image: url("../assets/images/rain-bg.jpg");
   &::after {
@@ -154,6 +159,69 @@ export default {
   }
   100% {
     background-position: 400px 1100px, 400px 400px, 600px 600px;
+  }
+}
+
+// thunder weather
+&.weather-thunder {
+  background-image: url("../assets/images/thunder_sky.jpg");
+  &::after,
+  &::before {
+    content: "";
+    background-image: url("../assets/images/fog.png");
+    height: 810px;
+    position: absolute;
+    width: 100%;
+    background-repeat: repeat-x;
+  }
+  &::after {
+    top: -50px;
+    animation: animateCloud var(--cloudAnimateTime) linear infinite
+    alternate-reverse;
+  }
+  &::before {
+    top: 300px;
+    animation: animateCloud calc(var(--cloudAnimateTime) / 2) linear infinite
+    alternate;
+  }
+}
+@keyframes animateCloud {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+// misty weather
+&.weather-mist {
+  background-image: url("../assets/images/Mist.jpg");
+  &::after,
+  &::before {
+    content: "";
+    background-image: url("../assets/images/fog.png");
+    height: 810px;
+    position: absolute;
+    width: 100%;
+    background-repeat: repeat-x;
+  }
+  &::after {
+    top: -50px;
+    animation: animateCloud var(--cloudAnimateTime) linear infinite
+    alternate-reverse;
+  }
+  &::before {
+    top: 300px;
+    animation: animateCloud calc(var(--cloudAnimateTime) / 2) linear infinite
+    alternate;
+  }
+}
+@keyframes animateCloud {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 100% 0;
   }
 }
 

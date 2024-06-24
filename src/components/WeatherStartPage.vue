@@ -1,18 +1,29 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
+// userName ref erstellen, um den Zustand des Nutzernamens zu halten
 const userName = ref('');
+
+// Instanzen von useRouter und useStore holen
 const router = useRouter();
 const store = useStore();
 
+// onMounted Lifecycle Hook verwenden, um den userName bei Initialisierung zu leeren
+onMounted(() => {
+  userName.value = ''; // Setzt userName auf einen leeren String, wenn die Komponente gemountet wird
+  console.log('Component mounted and userName cleared');
+});
+
+// Funktion, um zur Wetterseite zu navigieren
 const navigateToWeather = async () => {
   if (userName.value.trim()) {
-    await store.dispatch('setUser', userName.value);
+    await store.dispatch('setUser', userName.value.trim()); // Stelle sicher, dass Leerzeichen entfernt werden
     await router.push('/weather');
   }
 };
+
 </script>
 
 <template>
@@ -23,13 +34,14 @@ const navigateToWeather = async () => {
     <div class="footer-text">
       <a href="https://github.com/Ann-Jacqueline/frontend-webtech/" target="_blank" class="link">
         <span>
-          Github Repository WebTech von Ann-Jacqueline und Emilie<br>
+          Github Repository WebTech Frontend<br>
           Dozenten: Wider/Larisch
         </span>
       </a>
     </div>
   </div>
 </template>
+
 
 <style scoped lang="less">
 .start-page {
@@ -69,9 +81,17 @@ const navigateToWeather = async () => {
     background-color: rgba(255, 255, 255, 0.8);
     font-size: 20px;
     position: fixed;
-    top:22%;
+    top: 22%;
     right: 7%;
     left: 75%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Subtiler Schatten für 3D-Effekt */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Weiche Übergänge für die Interaktion */
+  }
+
+  .name-input:focus {
+    background-color: #ffffff; /* Blauer Hintergrund beim Fokussieren */
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.4); /* Blauer Glow-Effekt beim Fokussieren */
+    outline: none; /* Entfernt den Standard-Browser-Fokus Rahmen */
   }
 
   .next-button {
@@ -90,7 +110,15 @@ const navigateToWeather = async () => {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Box-Shadow für Tiefe */
+    transition: transform 0.1s, background-color 0.3s; /* Weiche Übergänge für das Drücken */
   }
+
+  .next-button:active {
+    background-color: rgba(25, 118, 210); /* Dunklerer Blauton beim Drücken */
+    transform: scale(0.95); /* Skaliert den Button beim Drücken leicht herunter */
+  }
+
   .footer-text {
     position: absolute;
     bottom: 30px;

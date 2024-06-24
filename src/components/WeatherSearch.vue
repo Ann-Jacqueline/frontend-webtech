@@ -25,13 +25,17 @@ export default {
     ...mapGetters(["isSearched", "getWeatherCountry", "getError", "getTimezone"]),
     currentDate() {
       const today = new Date();
-      return today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const timezoneOffset = this.getTimezone * 1000; // Zeitverschiebung der API in Sekunden
+      const localTimeOffset = new Date().getTimezoneOffset() * 60000; // Lokale Zeitverschiebung in Millisekunden
+      const localDate = new Date(today.getTime() + timezoneOffset + localTimeOffset);
+      return localDate.toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     },
     localTime() {
-      const timezoneOffset = this.getTimezone * 1000; // API returns timezone in seconds
-      const localTimeOffset = new Date().getTimezoneOffset() * 60000; // Convert local timezone offset to milliseconds
-      const localDate = new Date(new Date().getTime() + timezoneOffset + localTimeOffset);
-      return "Local Time: " + localDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })+"h";
+      const today = new Date();
+      const timezoneOffset = this.getTimezone * 1000; // API gibt Zeitzone in Sekunden zurück
+      const localTimeOffset = new Date().getTimezoneOffset() * 60000; // Umrechnung der lokalen Zeitverschiebung in Millisekunden
+      const localDate = new Date(today.getTime() + timezoneOffset + localTimeOffset);
+      return "Lokale Zeit: " + localDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hour12: false }) + " Uhr";
     }
   },
   methods: {
@@ -42,6 +46,7 @@ export default {
   }
 };
 </script>
+
 <style lang="less" scoped>
 .weather-search {
   position: relative;
@@ -92,7 +97,7 @@ export default {
 
   .local-time {
     font-size: 20px;
-    color: black;
+    color:  black;
     margin-left: 50px;
     font-weight: 600;
   }

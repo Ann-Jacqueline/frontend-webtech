@@ -44,7 +44,7 @@ export default {
     align-items: center;
     color: black;
     font-size: larger;
-    background-color: rgba(68, 100, 106, 0.44); /* Leicht transparenter grüner Hintergrund */
+    background-color: rgba(176, 190, 197, 0.8); /* Leicht transparenter grüner Hintergrund */
     padding: 10px; /* Padding für bessere Optik */
     border-radius: 5px; /* Abgerundete Ecken */
     margin: 5px; /* Abstand zwischen den Elementen */
