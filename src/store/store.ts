@@ -60,6 +60,7 @@ interface State {
   userName?: string;
   showNav: boolean;
   tempUnit: string; // 'C' für Celsius, 'F' für Fahrenheit
+  tempUnitStored: string; // Die Einheit, in der die aktuellen Daten gespeichert sind.
 }
 
 
@@ -79,6 +80,7 @@ const store = createStore<State>({
     userName: localStorage.getItem('userName') || "",
     showNav: true,
     tempUnit: 'C', // Standardmäßig Celsius
+    tempUnitStored: 'C' // Die Einheit, in der die aktuellen Daten gespeichert sind.
   },
   getters: {
     getWeatherMain: (state) => {
@@ -109,8 +111,31 @@ const store = createStore<State>({
 
   },
   mutations: {
-    TOGGLE_TEMP_UNIT(state) {
-      state.tempUnit = state.tempUnit === 'C' ? 'F' : 'C'; // Umschalten zwischen 'C' und 'F'
+    RECALCULATE_TEMPERATURES(state) {
+      // Definiere die Funktion mit expliziter Typangabe für den Parameter temp
+      const convertTemp = (temp: number | undefined): number | undefined => {
+        if (temp !== undefined) {
+          const factor = state.tempUnit === 'C' ? 5 / 9 : 9 / 5;
+          const offset = state.tempUnit === 'C' ? -32 : 32;
+          return Math.round((temp + offset) * factor);
+        }
+        return temp; // Rückgabe des unveränderten Werts, falls undefined
+      };
+
+      // Anwenden der Umrechnungsfunktion auf alle Temperaturwerte
+      state.weatherData.temp = convertTemp(state.weatherData.temp);
+      state.weatherData.tempMin = convertTemp(state.weatherData.tempMin);
+      state.weatherData.tempMax = convertTemp(state.weatherData.tempMax);
+      state.weatherData.feelsLike = convertTemp(state.weatherData.feelsLike);
+    },
+
+    // Umschalten der Temperatureinheit und Auslösen der Temperaturumrechnung
+    TOGGLE_TEMP_UNIT(state, newUnit) {
+      if (state.tempUnit !== newUnit) {
+        state.tempUnit = newUnit;
+        // Trigger a re-calculation of temperatures
+        this.RECALCULATE_TEMPERATURES(state);
+      }
     },
     SET_DEFAULT_SEARCH(state, cityName) {
       const existingIndex = state.cityHistory.findIndex(city => city.name === cityName);
@@ -148,16 +173,20 @@ const store = createStore<State>({
       state.search = search.toLowerCase();
     },
     SET_WEATHER_DATA(state, data) {
-      const convertTemp = (temp: number): number => {
-        return state.tempUnit === 'C' ? Math.round(temp) : Math.round(temp * 9 / 5 + 32);
+      const convertTemp = (temp: number, from: string, to: string): number => {
+        if (from === to) {
+          return temp; // Keine Umrechnung notwendig
+        }
+        return to === 'C' ? Math.round((temp - 32) * 5 / 9) : Math.round(temp * 9 / 5 + 32);
       };
-      // Update state with new weather data
+
+      // Stelle sicher, dass die Temperaturen in der gespeicherten Einheit konvertiert werden
       state.weatherData = {
         name: data.name,
-        temp: convertTemp(data.main.temp),
-        tempMin: convertTemp(data.main.temp_min),
-        tempMax: convertTemp(data.main.temp_max),
-        feelsLike: convertTemp(data.main.feels_like),
+        temp: convertTemp(data.main.temp, 'C', state.tempUnit),
+        tempMin: convertTemp(data.main.temp_min, 'C', state.tempUnit),
+        tempMax: convertTemp(data.main.temp_max, 'C', state.tempUnit),
+        feelsLike: convertTemp(data.main.feels_like, 'C', state.tempUnit),
         description: data.weather[0].description,
         icon: data.weather[0].icon.substring(0, 2),
         info: data.weather[0].main,
@@ -169,6 +198,7 @@ const store = createStore<State>({
         visibility: data.visibility,
         timezone: data.timezone
       };
+      state.tempUnitStored = state.tempUnit; // Aktualisiere die gespeicherte Einheit
       // Save coordination and time data
       state.coord = data.coord;
       state.sys = data.sys;
@@ -197,6 +227,9 @@ const store = createStore<State>({
         state.cityHistory.splice(index, 1);
         localStorage.setItem('cityHistory', JSON.stringify(state.cityHistory));
       }
+    },
+    RESET_ERROR_STATE(state) {
+      state.isError = false;
     },
     setShowNav(state, value) {
       // Toggle navigation visibility
@@ -228,6 +261,7 @@ const store = createStore<State>({
 
             // Berechnung des korrekten Datums und der korrekten Uhrzeit für die spezifische Zeitzone
             const currentDate = new Date(Date.now() + timezoneOffset + localTimeOffset);
+            commit('RESET_ERROR_STATE'); // Reset error state after successful fetch
 
             commit('ADD_CITY_HISTORY', {
               id: Date.now(),
@@ -264,6 +298,9 @@ const store = createStore<State>({
 
       removeCity({ commit }, id) {
         commit('REMOVE_CITY_HISTORY', id);
+      },
+      resetErrorState({ commit }) {
+        commit('RESET_ERROR_STATE');
       },
       setUser({ commit }, userName) {
         commit('SET_USER_NAME', userName);

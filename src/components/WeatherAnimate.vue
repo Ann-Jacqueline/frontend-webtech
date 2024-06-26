@@ -35,8 +35,9 @@ export default {
   height: 100vh;
   background-size: cover;
   background-repeat: no-repeat;
-  transition: background-image 2s;
+  transition: background-image 4s;
   background-position: center;
+  z-index:2;
 }
 &.weather-default {
   &::after {
@@ -216,6 +217,9 @@ export default {
     alternate;
   }
 }
+&.error {
+  background-image: url("../assets/images/error.jpg");
+}
 @keyframes animateCloud {
   0% {
     background-position: -1000px 0;
@@ -225,7 +229,5 @@ export default {
   }
 }
 
-&.error {
-  background-image: url("../assets/images/error.jpg");
-}
+
 </style>

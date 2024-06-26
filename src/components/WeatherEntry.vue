@@ -2,14 +2,14 @@
   <div id="app" class="app">
     <nav id="nav" class="nav" :class="weatherClass">
       <div class="user-profile">
-        <img src="@/assets/images/profile-pic.png" alt="User" class="user-pic">
+        <!-- User Profile Picture and Invisible Button Container -->
+        <div class="profile-pic-container">
+          <img src="@/assets/images/profile-pic.png" alt="User" class="user-pic">
+          <button class="invisible-button" @click="navigateToWeather"></button>
+        </div>
         <span class="user-name">{{ userName }}</span>
       </div>
       <img src="@/assets/images/weatherworks ohne backround.png" alt="Logo" class="logo">
-      <div class="nav-links">
-        <router-link class="Tab" to="/account">Your Account</router-link>
-        <router-link class="Tab" to="/recommendations">Weather Recommendations</router-link>
-      </div>
     </nav>
     <transition name="fade" mode="out-in" appear>
       <div class="card">
@@ -41,9 +41,14 @@ export default {
     const router = useRouter();
     const store = useStore();
 
+    function navigateToWeather() {
+      router.push('/account');
+    }
+
     return {
       router,
-      store
+      store,
+      navigateToWeather
     };
   },
   computed: {
@@ -62,7 +67,7 @@ export default {
         'weather-rain': this.weatherInfo === 'Rain',
         'weather-snow': this.weatherInfo === 'Snow',
         'weather-thunder': this.weatherInfo === 'Thunder',
-        'weather-mist': this.weatherInfo === 'Mist' || this.weatherInfo === 'Haze',
+        'weather-mist':  this.weatherInfo === 'Mist' ||  this.weatherInfo === 'Haze' ||  this.weatherInfo === 'Smoke' ||  this.weatherInfo === 'Dust' ||  this.weatherInfo === 'Fog' ||  this.weatherInfo === 'Sand' ||  this.weatherInfo === 'Ash' ||  this.weatherInfo === 'Squall' ||  this.weatherInfo === 'Tornado',
 
       };
     }
@@ -190,10 +195,23 @@ body {
     padding:10px;
     border-radius: 5px;
   }
-  .user-pic {
-    height: 60px;
-    width: 60px;
-    border-radius: 50%;
+  .profile-pic-container {
+    position: relative;
+    .user-pic {
+      height: 60px;
+      width: 60px;
+      border-radius: 50%;
+    }
+    .invisible-button {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
   }
 }
 

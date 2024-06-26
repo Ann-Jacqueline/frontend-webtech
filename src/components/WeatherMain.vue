@@ -17,18 +17,20 @@ const weatherMain = computed(() => {
 const tempUnit = computed(() => store.getters.getTempUnit);
 
 function convertTemperature(temp) {
-  if (tempUnit.value === 'F') {
-    return Math.round(temp * 9 / 5 + 32);
+  if (store.state.tempUnitStored === store.state.tempUnit) {
+    return temp; // Keine Umrechnung nötig, bereits in der richtigen Einheit
   }
-  return Math.round(temp);
+  // Umrechnung erforderlich
+  return store.state.tempUnit === 'C' ?
+    Math.round((temp - 32) * 5 / 9) :
+    Math.round(temp * 9 / 5 + 32);
 }
-
 function toggleDropdown() {
   showDropdown.value = !showDropdown.value;
 }
 
 function toggleTempUnit(unit) {
-  store.commit('TOGGLE_TEMP_UNIT');
+  store.commit('TOGGLE_TEMP_UNIT',unit);
   toggleDropdown();
 }
 </script>

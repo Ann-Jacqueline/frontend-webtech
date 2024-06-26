@@ -16,7 +16,6 @@
           <span class="settings-text">Settings</span>
         </div>
         <router-link to="/weather" class="nav-item-Search">Weather Search</router-link>
-        <router-link to="/recommendations" class="nav-item-Rec">Recommendations</router-link>
       </nav>
       <h2 class="dashboard-title">{{ userName }}'s Weather Dashboard</h2>
     </div>
@@ -26,7 +25,7 @@
           <li v-for="city in cityHistory" :key="city.id" :class="{'city-item': true}">
             <div class="pin-container">
               <button @click="setAsDefault(city.name)" :class="{'pin-button': true, 'is-default': city.name === defaultSearch}"></button>
-              <span class="pin-text">Set as Default Search City</span>
+              <span class="pin-text">Set as Default Search</span>
             </div>
             <span></span> <span></span>
            <span>|</span>  <span></span>
@@ -36,7 +35,7 @@
             <span>|</span>
             <span class="date">Date: {{ city.date }}</span>
             <span>|</span>
-            <span class="local-time">Localtime: {{ city.localTime }}h</span>
+            <span class="local-time">Local Time: {{ city.localTime }}h</span>
             <button @click="removeCity(city.id)" class="delete-button">Delete</button>
           </li>
         </ul>
@@ -57,8 +56,14 @@ const tempUnit = computed(() => store.getters.getTempUnit);
 const userName = computed(() => store.getters.getUserName);
 
 // Konvertiere die Temperatur basierend auf der gewählten Einheit
-function convertTemperature(temp, unit) {
-  return unit === 'C' ? Math.round(temp) : Math.round(temp * 9 / 5 + 32);
+function convertTemperature(temp) {
+  if (store.state.tempUnitStored === tempUnit.value) {
+    return temp; // Keine Umrechnung nötig, bereits in der richtigen Einheit
+  }
+  // Umrechnung erforderlich
+  return tempUnit.value === 'C' ?
+    Math.round((temp - 32) * 5 / 9) :
+    Math.round(temp * 9 / 5 + 32);
 }
 
 // Stadtverlauf mit dynamisch umgerechneten Temperaturen
@@ -69,7 +74,7 @@ const cityHistory = computed(() => {
   }
   return history.map(city => ({
     ...city,
-    temp: convertTemperature(city.temp, tempUnit.value)
+    temp: convertTemperature(city.temp)
   }));
 });
 
@@ -90,10 +95,9 @@ function toggleDropdown() {
 }
 
 // Funktion zum Umschalten der Temperatureinheit
-function toggleTempUnit() {
-  store.commit('TOGGLE_TEMP_UNIT');
-  // Aktualisiere die Stadtvorlauftemperaturen nach der Einheitsumschaltung
-  showDropdown.value = false;
+function toggleTempUnit(unit) {
+  store.commit('TOGGLE_TEMP_UNIT', unit);
+  toggleDropdown();
 }
 
 // Funktion zum Ausloggen
@@ -136,8 +140,8 @@ function removeCity(id) {
   padding:20px;
 }
 .nav-item-Search {
-  padding: 1vw 8.5vh;
-  background-color: rgba(68, 68, 68, 0);
+  padding: 1vw 8.6vh;
+  background-color: rgba(255, 255, 255, 0.32);
   color: rgb(21, 20, 20);
   text-decoration: none;
   border-radius: 5px;
@@ -145,7 +149,7 @@ function removeCity(id) {
   margin-right: 415px;
   margin-top:10px;/* Abstand zwischen den Navigationspunkten */
   left:0;
-  top:17vh;
+  top:20vh;
   z-index:101;
   font-size:larger;
   &:hover {
@@ -153,27 +157,6 @@ function removeCity(id) {
   }
 }
 
-.nav-item-Rec {
-  padding: 1vw 7.2vh;
-  background-color: rgba(68, 68, 68, 0);
-  color: rgb(21, 20, 20);
-  text-decoration: none;
-  border-radius: 5px;
-  /* Abstand zwischen den Navigationspunkten */
-  position: fixed;
-  margin-right: 415px;
-  margin-top:10px;/* Abstand zwischen den Navigationspunkten */
-  left:0;
-  top:33vh;
-  z-index:101;
-  font-size:larger;
-
-
-
-  &:hover {
-    background-color: rgba(102, 102, 102, 0.3);
-  }
-}
 .delete-button {
   margin-left: auto; /* Pushes the button to the right */
   padding: 5px 10px;
@@ -217,6 +200,10 @@ function removeCity(id) {
   margin-left: 10px; /* Abstand zwischen Button und Text */
   color: #000; /* Textfarbe */
   margin-right:20px;
+}
+.li-text{
+  background-color:#ffff;
+  z-index:5;
 }
 .fog-animation {
   position: absolute;
@@ -263,17 +250,17 @@ function removeCity(id) {
 
 
 .logout-button {
-  padding: 1vw 12.5vh;
-  background-color: rgba(255, 0, 0, 0);
+  padding: 1vw 12.7vh;
+  background-color: #D73434;
   color: white;
   border: none;
   cursor: pointer;
   border-radius: 5px;
-  position: fixed;
+  position: relative;
   margin-right: 415px;
   margin-top:10px;/* Abstand zwischen den Navigationspunkten */
-  left:0;
-  top:74vh;
+  left:-5vw;
+  top:58.5vh;
   z-index:101;
   font-size:larger;
   &:hover {
@@ -298,21 +285,26 @@ function removeCity(id) {
 }
 
 .settings-text {
+  padding: 1vw 12.7vh;
+  background-color: rgba(255, 255, 255, 0.32);
+  color: rgb(21, 20, 20);
+  text-decoration: none;
+  border-radius: 5px;
   display: inline-block;
-  margin-left: 10px;
+  margin-left: 0;
   vertical-align: middle; /* Zentriert den Text vertikal zum Icon */
-  font-size: 3vh; /* Einstellung der Textgröße */
-  color: #151414; /* Textfarbe */
+  font-size: larger; /* Einstellung der Textgröße */
   position: fixed;
-  top:84.5vh;
-  left:5vw;
+  top:35vh;
+  left:0;
+
 }
 
 .settings-dropdown i {
-  font-size: 26px; /* Größeres Icon */
+  font-size: 24px; /* Größeres Icon */
   color: #151414;
   position: fixed;
-  top:83vh;
+  top:35vh;
   left:12vw;
 }
 
@@ -323,7 +315,7 @@ function removeCity(id) {
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   padding: 10px 0;
   position: fixed;
-  top:83vh;
+  top:35vh;
   left:12vw; /* Direkt unter dem Icon */
   z-index: 150; /* Stellt sicher, dass das Dropdown über anderen Elementen schwebt */
 }
@@ -333,6 +325,7 @@ function removeCity(id) {
   text-decoration: none;
   display: block; /* Stellt sicher, dass jedes Element die volle Breite des Dropdowns einnimmt */
   color: black;
+
 }
 
 .settings-dropdown ul li:hover {
@@ -382,7 +375,7 @@ function removeCity(id) {
   display: flex;
   flex-direction: column;
   align-items: center; /* Zentriert die Liste */
-  width: 60vw; /* Breite abhängig von der Bildschirmbreite */
+  width: 62vw; /* Breite abhängig von der Bildschirmbreite */
   margin-left: 31%; /* Horizontal zentriert */
   margin-top: 11.5%; /* Vertikaler Abstand vom oberen Rand, abhängig von der Bildschirmhöhe */
 }
@@ -393,6 +386,7 @@ function removeCity(id) {
   border-radius: 20px;
   margin-bottom: 2vh;
   display: flex;
+  font-weight:bolder;
   justify-content: space-between; /* Ensures items are spaced evenly */
   align-items: center;
   width: 100%; /* Ensures all items are the same width */
@@ -410,10 +404,11 @@ function removeCity(id) {
 
   }
 
-  .city-name, .temperature, .date, .local-time {
+  .city-name, .temperature, .date,.local-time,.pin-text {
     margin-right: 15px; /* Consistent spacing between text */
     white-space: nowrap;
     margin-left:20px;
+
   }
 
 
