@@ -49,6 +49,7 @@ interface CityHistoryEntry {
 interface State {
   apiBase: string;
   apiKey: string;
+  backendUrl:string;
   defaultSearch: string;
   search: string;
   weatherData: WeatherData;
@@ -58,9 +59,8 @@ interface State {
   timezone?: number;
   cityHistory: CityHistoryEntry[];
   userName?: string;
-  showNav: boolean;
   tempUnit: string; // 'C' für Celsius, 'F' für Fahrenheit
-  tempUnitStored: string; // Die Einheit, in der die aktuellen Daten gespeichert sind.
+  tempUnitStored?: string; // Die Einheit, in der die aktuellen Daten gespeichert sind.
 }
 
 
@@ -69,16 +69,16 @@ const store = createStore<State>({
   state: {
     apiBase: "https://api.openweathermap.org/data/2.5/",
     apiKey: import.meta.env.VITE_APP_API_KEY,
-    defaultSearch: localStorage.getItem('defaultSearch') || "Berlin",
+    backendUrl: import.meta.env.VITE_APP_BACKEND_BASE_URL,
+    defaultSearch:  "Berlin",
     search: "",
     weatherData: {},
     isError: false,
     coord: {},
     sys: {},
     timezone: 0,
-    cityHistory: JSON.parse(localStorage.getItem('cityHistory') || '[]'),
-    userName: localStorage.getItem('userName') || "",
-    showNav: true,
+    cityHistory:[],
+    userName:"",
     tempUnit: 'C', // Standardmäßig Celsius
     tempUnitStored: 'C' // Die Einheit, in der die aktuellen Daten gespeichert sind.
   },
@@ -97,8 +97,6 @@ const store = createStore<State>({
     getWeatherCountry: (state) => state.weatherData.country,
     isSearched: (state) => state.search !== "",
     getError: (state) => state.isError,
-    getCoord: (state) => state.coord,
-    getSys: (state) => state.sys,
     getTimezone: (state) => state.timezone,
     getUserName: (state) => state.userName,
     getTempUnit: (state) => state.tempUnit,
@@ -106,7 +104,7 @@ const store = createStore<State>({
       if (state.cityHistory.length === 0) {
         return "You haven't searched any cities yet.";
       }
-      return state.cityHistory;
+      return Array.isArray(state.cityHistory) ? state.cityHistory : [];
     }
 
   },
@@ -137,7 +135,7 @@ const store = createStore<State>({
         this.RECALCULATE_TEMPERATURES(state);
       }
     },
-    SET_DEFAULT_SEARCH(state, cityName) {
+    SET_DEFAULT_SEARCH(state, cityName: string) {
       const existingIndex = state.cityHistory.findIndex(city => city.name === cityName);
       if (existingIndex !== -1) {
         const existingCity = state.cityHistory[existingIndex];
@@ -155,22 +153,22 @@ const store = createStore<State>({
         });
       }
       state.defaultSearch = cityName;
-      localStorage.setItem('defaultSearch', cityName);
-      localStorage.setItem('cityHistory', JSON.stringify(state.cityHistory));
     },
     ADD_CITY_HISTORY(state, newCity) {
-      const existingIndex = state.cityHistory.findIndex(city => city.name === newCity.name);
-      if (existingIndex !== -1) {
-        state.cityHistory.splice(existingIndex, 1);
+      // Überprüfe, ob die Stadt bereits existiert basierend auf dem Namen
+      const existingCity = state.cityHistory.find(city => city.name === newCity.name);
+      if (!existingCity) {
+        state.cityHistory.unshift(newCity); // Füge die Stadt hinzu, wenn sie noch nicht existiert
+        if (state.cityHistory.length > 5) {
+          state.cityHistory.pop(); // Entferne das älteste Element, wenn die Liste zu lang wird
+        }
       }
-      if (state.cityHistory.length >= 5) {
-        state.cityHistory.pop();
-      }
-      state.cityHistory.unshift(newCity);
-      localStorage.setItem('cityHistory', JSON.stringify(state.cityHistory));
     },
     SET_SEARCH(state, search) {
       state.search = search.toLowerCase();
+    },
+    SET_CITY_HISTORY(state, history) {
+      state.cityHistory = history;
     },
     SET_WEATHER_DATA(state, data) {
       const convertTemp = (temp: number, from: string, to: string): number => {
@@ -204,14 +202,14 @@ const store = createStore<State>({
       state.sys = data.sys;
       state.timezone = data.timezone;
     },
-    SET_USER_NAME(state, userName) {
+    SET_USER_NAME(state, userName: string) {
       state.userName = userName;
-      localStorage.setItem('userName', userName);
+    },
+    LOGOUT_USER(state) {
+      state.userName = "";
     },
     REMOVE_USER_NAME(state) {
-      // Remove Username from state and local storage
       state.userName = "";
-      localStorage.removeItem('userName');
     },
     CLEAR_CITY_HISTORY(state) {
       state.cityHistory = [];
@@ -220,92 +218,89 @@ const store = createStore<State>({
       // Set error state
       state.isError = value;
     },
-    REMOVE_CITY_HISTORY(state, id) {
-      // Remove a city from the history by ID
-      const index = state.cityHistory.findIndex(city => city.id === id);
-      if (index !== -1) {
-        state.cityHistory.splice(index, 1);
-        localStorage.setItem('cityHistory', JSON.stringify(state.cityHistory));
-      }
+    REMOVE_CITY_HISTORY(state, id: number) {
+      state.cityHistory = state.cityHistory.filter(city => city.id !== id);
     },
     RESET_ERROR_STATE(state) {
       state.isError = false;
     },
-    setShowNav(state, value) {
-      // Toggle navigation visibility
-      state.showNav = value;
-    }
   },
-    actions: {
-      async fetchWeatherData({ commit, state }, search) {
-        commit('SET_SEARCH', search);
-        try {
-          const response = await axios.get(`${state.apiBase}weather?q=${search}&appid=${state.apiKey}&units=metric`);
-          const roundedData = {
-            ...response.data,
-            main: {
-              ...response.data.main,
-              temp: Math.round(response.data.main.temp),
-              tempMin: Math.round(response.data.main.temp_min),
-              tempMax: Math.round(response.data.main.temp_max),
-              feelsLike: Math.round(response.data.main.feels_like),
-            }
-          };
-          commit('SET_WEATHER_DATA', roundedData);
-          if (search !== state.defaultSearch) {
-            // Die lokale Systemzeitzone in Millisekunden umwandeln und subtrahieren
-            const localTimeOffset = new Date().getTimezoneOffset() * 60000;
-
-            // Zeitzone der API in Millisekunden umrechnen
-            const timezoneOffset = roundedData.timezone * 1000;
-
-            // Berechnung des korrekten Datums und der korrekten Uhrzeit für die spezifische Zeitzone
-            const currentDate = new Date(Date.now() + timezoneOffset + localTimeOffset);
-            commit('RESET_ERROR_STATE'); // Reset error state after successful fetch
-
-            commit('ADD_CITY_HISTORY', {
-              id: Date.now(),
-              name: roundedData.name,
-              temp: roundedData.main.temp,
-              description: roundedData.weather[0].description,
-              country: roundedData.sys.country,
-              date: currentDate.toLocaleDateString('de-DE'),
-              localTime: currentDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hour12: false })
-            });
+  actions: {
+    async fetchWeatherData({ commit, state }, search) {
+      commit('SET_SEARCH', search);
+      try {
+        const response = await axios.get(`${state.apiBase}/weather?q=${search}&appid=${state.apiKey}&units=metric`);
+        const roundedData = {
+          ...response.data,
+          main: {
+            ...response.data.main,
+            temp: Math.round(response.data.main.temp),
+            tempMin: Math.round(response.data.main.temp_min),
+            tempMax: Math.round(response.data.main.temp_max),
+            feelsLike: Math.round(response.data.main.feels_like),
           }
-        } catch (error) {
-          console.error("API request failed:", error);
-          commit('SET_ERROR', true);
+        };
+        commit('SET_WEATHER_DATA', roundedData);
+        if (search !== state.defaultSearch) {
+          const localTimeOffset = new Date().getTimezoneOffset() * 60000;
+          const timezoneOffset = roundedData.timezone * 1000;
+          const currentDate = new Date(Date.now() + timezoneOffset + localTimeOffset);
+          commit('RESET_ERROR_STATE');
+          commit('ADD_CITY_HISTORY', {
+            id: Date.now(),
+            name: roundedData.name,
+            temp: roundedData.main.temp,
+            description: roundedData.weather[0].description,
+            country: roundedData.sys.country,
+            date: currentDate.toLocaleDateString('de-DE'),
+            localTime: currentDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hour12: false })
+          });
         }
-      },
-      pinCityAsDefault({ commit }, cityName) {
-        commit('SET_DEFAULT_SEARCH', cityName);
-      },
-      logOut({ commit }) {
-        commit('REMOVE_USER_NAME');
-        commit('CLEAR_CITY_HISTORY'); // Stellt sicher, dass du diese Mutation in deinen Mutationen definiert hast
-
-        // Entferne spezifische Einträge aus dem localStorage
-        localStorage.removeItem('userName');
-        localStorage.removeItem('cityHistory');
-        localStorage.removeItem('defaultSearch');
-
-        // Leite den Benutzer zur Startseite weiter
-        router.push('/').then(() => {
-          console.log('User logged out and redirected to home page.');
-        });
-      },
-
-      removeCity({ commit }, id) {
-        commit('REMOVE_CITY_HISTORY', id);
-      },
-      resetErrorState({ commit }) {
-        commit('RESET_ERROR_STATE');
-      },
-      setUser({ commit }, userName) {
-        commit('SET_USER_NAME', userName);
+      } catch (error) {
+        console.error("API request failed:", error);
+        commit('SET_ERROR', true);
       }
+    },
+    async addCityHistory({ commit, state }, cityData) {
+      try {
+        const response = await axios.post(`${state.backendUrl}/history`, cityData);
+        commit('ADD_CITY_HISTORY', response.data);
+      } catch (error) {
+        console.error("Failed to add city history:", error);
+      }
+    },
+    async fetchCityHistory({ commit, state }) {
+      try {
+        const response = await axios.get(`${state.backendUrl}/history`);
+        commit('SET_CITY_HISTORY', response.data);
+      } catch (error) {
+        console.error("Failed to fetch city history:", error);
+      }
+    },
+    async logOut({ commit, state }) {
+      try {
+        await axios.post(`${state.backendUrl}/users/logout`);
+        commit('LOGOUT_USER');
+        router.push('/');
+      } catch (error) {
+        console.error("Failed to log out user:", error);
+        commit('SET_ERROR', true);
+      }
+    },
+    pinCityAsDefault({ commit }, cityName) {
+      commit('SET_DEFAULT_SEARCH', cityName);
+    },
+    removeCity({ commit }, id) {
+      commit('REMOVE_CITY_HISTORY', id);
+    },
+    resetErrorState({ commit }) {
+      commit('RESET_ERROR_STATE');
+    },
+    setUser({ commit }, userName) {
+      commit('SET_USER_NAME', userName);
     }
+  }
+
 })
 
 export default store

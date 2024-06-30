@@ -2,29 +2,51 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
+import axios from 'axios';
 
-// userName ref erstellen, um den Zustand des Nutzernamens zu halten
+// Configuration for the backend URL
+const backendUrl = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+
+// userName ref to hold the state of the username
 const userName = ref('');
 
-// Instanzen von useRouter und useStore holen
+// Get instances of useRouter and useStore
 const router = useRouter();
 const store = useStore();
 
-// onMounted Lifecycle Hook verwenden, um den userName bei Initialisierung zu leeren
+// Ensure axios sends cookies with each request (if your backend requires sessions)
+axios.defaults.withCredentials = true;
+
+// onMounted lifecycle hook to initialize userName when the component is mounted
 onMounted(() => {
-  userName.value = ''; // Setzt userName auf einen leeren String, wenn die Komponente gemountet wird
+  userName.value = ''; // Clear userName
   console.log('Component mounted and userName cleared');
 });
 
-// Funktion, um zur Wetterseite zu navigieren
+// Function to navigate to the weather page after successful login
 const navigateToWeather = async () => {
   if (userName.value.trim()) {
-    await store.dispatch('setUser', userName.value.trim()); // Stelle sicher, dass Leerzeichen entfernt werden
-    await router.push('/weather');
-  }
-};
+    try {
+      // Attempt to login
+      const loginResponse = await axios.post(`${backendUrl}/users/login`, { userName: userName.value.trim() });
+      if (loginResponse.status === 201) { // Check for successful session creation
+        console.log('Login successful');
 
+        // Fetch current user data post-login
+        const userResponse = await axios.get(`${backendUrl}/users/current`);
+        if (userResponse.data && userResponse.data.userName) {
+          console.log('Current user loaded:', userResponse.data.userName);
+          store.dispatch('setUser', userResponse.data.userName); // Store user info in Vuex store
+          router.push('/weather'); // Navigate to weather page
+        }
+      }
+    } catch (error) {
+      console.error('Error during login or fetching user:', error);
+    }
+  }
+}
 </script>
+
 
 <template>
   <div class="start-page">
@@ -41,7 +63,6 @@ const navigateToWeather = async () => {
     </div>
   </div>
 </template>
-
 
 <style scoped lang="less">
 .start-page {

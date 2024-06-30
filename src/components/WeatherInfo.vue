@@ -24,6 +24,9 @@ export default {
     ...mapGetters({
       weatherInfo: 'getWeatherInfo' // Nutzung des umbenannten Getters
     })
+  },
+  mounted() {
+    console.log("Geladene Wetterinformationen:", this.weatherInfo);
   }
 };
 </script>

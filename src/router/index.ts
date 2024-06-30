@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import WeatherEntry from '@/components/WeatherEntry.vue';
 import UserAccount from '@/components/WeatherAccountManager.vue';
 import WeatherStartPage from '@/components/WeatherStartPage.vue';
-import WeatherRecommendations from '@/components/WeatherRecommendations.vue';
+import WeatherRecommendations from '@/components/oldComponente/WeatherRecommendations.vue';
 
 
 

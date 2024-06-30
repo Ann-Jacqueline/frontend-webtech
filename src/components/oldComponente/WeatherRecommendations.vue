@@ -74,10 +74,10 @@ export default {
     <hr class="line">
     <nav id="nav" class="nav" :class="weatherClass">
       <div class="user-profile">
-        <img src="@/assets/images/profile-pic.png" alt="User" class="user-pic">
+        <img src="../../assets/images/profile-pic.png" alt="User" class="user-pic">
         <span class="user-name">{{ userName }}</span>
       </div>
-      <img src="@/assets/images/weatherworks ohne backround.png" alt="Logo" class="logo">
+      <img src="../../assets/images/weatherworks%20ohne%20backround.png" alt="Logo" class="logo">
       <div class="nav-links">
         <router-link class="Tab" to="/account">Your Account</router-link>
         <router-link class="Tab" to="/weather">Weather Search</router-link>

@@ -46,14 +46,17 @@
 </template>
 
 <script setup>
-import { computed, ref, watchEffect } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
+axios.defaults.withCredentials = true;
 
+const backendUrl = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 const store = useStore();
 const router = useRouter();
-const tempUnit = computed(() => store.getters.getTempUnit);
-const userName = computed(() => store.getters.getUserName);
+const showDropdown = ref(false);
+
 
 // Konvertiere die Temperatur basierend auf der gewählten Einheit
 function convertTemperature(temp) {
@@ -62,10 +65,9 @@ function convertTemperature(temp) {
   }
   // Umrechnung erforderlich
   return tempUnit.value === 'C' ?
-    Math.round((temp - 32) * 5 / 9) :
-    Math.round(temp * 9 / 5 + 32);
+      Math.round((temp - 32) * 5 / 9) :
+      Math.round(temp * 9 / 5 + 32);
 }
-
 // Stadtverlauf mit dynamisch umgerechneten Temperaturen
 const cityHistory = computed(() => {
   const history = store.getters.getCityHistory;
@@ -78,33 +80,30 @@ const cityHistory = computed(() => {
   }));
 });
 
-const noCitiesMessage = computed(() => typeof store.getters.getCityHistory === 'string' ? store.getters.getCityHistory : '');
+const tempUnit = computed(() => store.getters.getTempUnit);
+const userName = computed(() => store.getters.getUserName);
 const defaultSearch = computed(() => store.state.defaultSearch);
 
-// Debugging: Überwache Änderungen an defaultSearch und logge sie
-watchEffect(() => {
-  console.log('Default Search Changed:', defaultSearch.value);
-});
+const noCitiesMessage = computed(() => typeof store.getters.getCityHistory === 'string' ? store.getters.getCityHistory : '');
 
-// Zustand für das Dropdown-Menü
-const showDropdown = ref(false);
 
-// Funktion zum Umschalten des Dropdown-Menüs
 function toggleDropdown() {
   showDropdown.value = !showDropdown.value;
 }
 
-// Funktion zum Umschalten der Temperatureinheit
 function toggleTempUnit(unit) {
   store.commit('TOGGLE_TEMP_UNIT', unit);
   toggleDropdown();
 }
 
-// Funktion zum Ausloggen
-function logOut() {
-  store.dispatch('logOut').then(() => {
+async function logOut() {
+  try {
+    await axios.post(`${backendUrl}/users/logout`);
+    store.dispatch('logOut');
     router.push('/');
-  });
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
 }
 
 // Funktion zum Setzen der Standardstadt
@@ -118,6 +117,37 @@ function setAsDefault(cityName) {
 function removeCity(id) {
   store.dispatch('removeCity', id);
 }
+
+
+async function fetchCityHistory() {
+  // Lade zuerst den Stadtverlauf aus dem Vuex-Store
+  cityHistory.value = store.getters.getCityHistory.map(city => ({
+    ...city,
+    temp: convertTemperature(city.temp)
+  }));
+
+  // Anfrage an das Backend, um die neuesten Daten abzurufen
+  try {
+    const response = await axios.get(`${backendUrl}/history`);
+    if (response.status === 200) {
+      // Nur Städte hinzufügen, die noch nicht im Store sind
+      response.data.forEach(cityFromBackend => {
+        const exists = store.getters.getCityHistory.some(city => city.name === cityFromBackend.name);
+        if (!exists) {
+          store.commit('ADD_CITY_HISTORY', {
+            ...cityFromBackend,
+            temp: convertTemperature(cityFromBackend.temp)
+          });
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Failed to fetch city history from backend:', error);
+  }
+}
+
+
+onMounted(fetchCityHistory);
 </script>
 
 

@@ -8,6 +8,7 @@ const showDropdown = ref(false);
 
 const weatherMain = computed(() => {
   let main = store.getters.getWeatherMain;
+  console.log("Aktuelle Wetterdaten:", main);
   return {
     ...main,
     temp: convertTemperature(main.temp),
@@ -27,10 +28,12 @@ function convertTemperature(temp) {
 }
 function toggleDropdown() {
   showDropdown.value = !showDropdown.value;
+  console.log("Dropdown-Status:", showDropdown.value);
 }
 
 function toggleTempUnit(unit) {
-  store.commit('TOGGLE_TEMP_UNIT',unit);
+  console.log("Umschalten der Temperatureinheit auf:", unit);
+  store.commit('TOGGLE_TEMP_UNIT', unit);
   toggleDropdown();
 }
 </script>

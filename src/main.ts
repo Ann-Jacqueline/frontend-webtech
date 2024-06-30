@@ -3,9 +3,12 @@ import App from './App.vue';
 import store from './store/store';
 import router from './router';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import axios from 'axios';
 
 
 const app = createApp(App);
+// Setze withCredentials für alle Anfragen
+axios.defaults.withCredentials = false;
 
 app.use(store);
 app.use(router);

@@ -2,7 +2,6 @@
   <div id="app" class="app">
     <nav id="nav" class="nav" :class="weatherClass">
       <div class="user-profile">
-        <!-- User Profile Picture and Invisible Button Container -->
         <div class="profile-pic-container">
           <img src="@/assets/images/profile-pic.png" alt="User" class="user-pic">
           <button class="invisible-button" @click="navigateToWeather"></button>
@@ -13,7 +12,7 @@
     </nav>
     <transition name="fade" mode="out-in" appear>
       <div class="card">
-        <WeatherSearch />
+        <WeatherSearch  @city-searched="logCitySearch" />
         <WeatherMain />
         <WeatherInfo />
       </div>
@@ -21,13 +20,16 @@
     <WeatherAnimate />
   </div>
 </template>
+
 <script>
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore, mapGetters, mapActions } from 'vuex';
 import WeatherSearch from "@/components/WeatherSearch.vue";
 import WeatherMain from "@/components/WeatherMain.vue";
 import WeatherInfo from "@/components/WeatherInfo.vue";
 import WeatherAnimate from "@/components/WeatherAnimate.vue";
-import { mapGetters, mapActions, useStore } from "vuex";
-import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 export default {
   name: "WeatherEntry",
@@ -40,26 +42,63 @@ export default {
   setup() {
     const router = useRouter();
     const store = useStore();
+    const userName = ref('');
+
+    const backendUrl = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+    axios.defaults.withCredentials = false; // Globale Konfiguration für alle Anfragen
+
+    async function fetchUserName() {
+      try {
+        const response = await axios.get(`${backendUrl}/users/current`, {
+          withCredentials: true
+        });
+        if (response.status === 200) {
+          userName.value = response.data.userName;
+        }
+      } catch (error) {
+        console.error('Failed to fetch current user:', error);
+      }
+    }
+
+    onMounted(fetchUserName);
 
     function navigateToWeather() {
       router.push('/account');
     }
 
+    async function logCitySearch(cityName, cityData) {
+      try {
+        const cityPayload = {
+          name: cityName,
+          country: cityData.country,
+          temperature: cityData.temp,
+          localtime: cityData.localtime,
+        };
+
+        // Send to backend
+        await axios.post(`${backendUrl}/city`, cityPayload);
+
+        // Log in store
+        await store.dispatch('addCityHistory', cityPayload);
+        console.log('City search logged successfully');
+      } catch (error) {
+        console.error('Error logging city search:', error);
+      }
+    }
+
     return {
-      router,
-      store,
-      navigateToWeather
+      userName,
+      navigateToWeather,
+      logCitySearch
     };
   },
   computed: {
-    ...mapGetters(["isSearched", "getUserName", "getWeatherMain"]),
-    userName() {
-      // Using Vuex getter or localStorage as fallback
-      return this.getUserName || localStorage.getItem('userName');
-    },
-    weatherInfo() {
-      return this.getWeatherMain.info;
-    },
+    ...mapGetters({
+      isSearched: 'isSearched',
+      getUserName: 'getUserName',
+      getWeatherMain: 'getWeatherMain',
+      weatherInfo: 'getWeatherMain' // Stellt sicher, dass dies korrekt aus dem Store abgerufen wird
+    }),
     weatherClass() {
       return {
         'weather-clear': this.weatherInfo === 'Clear',
@@ -67,25 +106,26 @@ export default {
         'weather-rain': this.weatherInfo === 'Rain',
         'weather-snow': this.weatherInfo === 'Snow',
         'weather-thunder': this.weatherInfo === 'Thunder',
-        'weather-mist':  this.weatherInfo === 'Mist' ||  this.weatherInfo === 'Haze' ||  this.weatherInfo === 'Smoke' ||  this.weatherInfo === 'Dust' ||  this.weatherInfo === 'Fog' ||  this.weatherInfo === 'Sand' ||  this.weatherInfo === 'Ash' ||  this.weatherInfo === 'Squall' ||  this.weatherInfo === 'Tornado',
-
+        'weather-mist': this.weatherInfo && ['Mist', 'Haze', 'Smoke', 'Dust', 'Fog', 'Sand', 'Ash', 'Squall', 'Tornado'].includes(this.weatherInfo)
       };
     }
   },
   methods: {
-    ...mapActions(["fetchWeatherData", "logOut"]),
+    ...mapActions({
+      fetchWeatherData: 'fetchWeatherData',
+      logOut: 'logOut'
+    }),
     initData() {
       this.fetchWeatherData(this.$store.state.defaultSearch);
-    },
+    }
   },
   created() {
-    if (!this.userName && localStorage.getItem('userName')) {
-      this.$store.dispatch('setUser', localStorage.getItem('userName'));
-    }
     this.initData();
-  },
+  }
 };
 </script>
+
+
 
 <style lang="less">
 @import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,700;0,800;0,900;1,300;1,500&display=swap");

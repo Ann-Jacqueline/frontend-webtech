@@ -1,11 +1,11 @@
 <template>
   <div class="weather-search">
     <input
-      type="text"
-      placeholder="Search City"
-      class="search-control"
-      v-model.trim="search"
-      @keydown.enter="getData"
+        type="text"
+        placeholder="Search City"
+        class="search-control"
+        v-model.trim="search"
+        @keydown.enter="getData"
     />
     <div class="info-container" v-if="isSearched">
       <span class="country">({{ getWeatherCountry }})</span>
@@ -29,31 +29,33 @@ export default {
     ...mapGetters(["isSearched", "getWeatherCountry", "getError", "getTimezone"]),
     currentDate() {
       const today = new Date();
-      const timezoneOffset = this.getTimezone * 1000; // Zeitverschiebung der API in Sekunden
-      const localTimeOffset = new Date().getTimezoneOffset() * 60000; // Lokale Zeitverschiebung in Millisekunden
+      const timezoneOffset = this.getTimezone * 1000;
+      const localTimeOffset = new Date().getTimezoneOffset() * 60000;
       const localDate = new Date(today.getTime() + timezoneOffset + localTimeOffset);
       return localDate.toLocaleDateString('en-EN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     },
     localTime() {
       const today = new Date();
-      const timezoneOffset = this.getTimezone * 1000; // API gibt Zeitzone in Sekunden zurück
-      const localTimeOffset = new Date().getTimezoneOffset() * 60000; // Umrechnung der lokalen Zeitverschiebung in Millisekunden
+      const timezoneOffset = this.getTimezone * 1000;
+      const localTimeOffset = new Date().getTimezoneOffset() * 60000;
       const localDate = new Date(today.getTime() + timezoneOffset + localTimeOffset);
       return "Local Time: " + localDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hour12: false }) + " Uhr";
     }
   },
   methods: {
-    ...mapActions(["fetchWeatherData", "resetErrorState"]),
+    ...mapActions(["fetchWeatherData"]),
     getData() {
       if (this.search) {
-        this.resetErrorState();
-        this.fetchWeatherData(this.search);
+        this.fetchWeatherData(this.search).then(() => {
+          console.log("Wetterdaten erfolgreich geladen für:", this.search);
+        }).catch(error => {
+          console.error("Fehler beim Laden der Wetterdaten für:", this.search, error);
+        });
       }
     }
   }
 };
 </script>
-
 
 
 <style lang="less" scoped>
