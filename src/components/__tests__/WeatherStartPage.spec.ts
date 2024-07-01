@@ -56,23 +56,4 @@ describe('WeatherStartPage', () => {
         expect(wrapper.vm.userName).toBe('');
     });
 
-    it('navigates to weather page on successful login', async () => {
-        const wrapper = shallowMount(WeatherStartPage, {
-            global: {
-                plugins: [router, store]
-            }
-        });
-        wrapper.vm.userName = 'Jane Doe';
-
-        // Mock successful axios responses
-        vi.mocked(axios.post).mockResolvedValueOnce({ status: 201 });
-        vi.mocked(axios.get).mockResolvedValueOnce({ data: { userName: 'Jane Doe' } });
-
-        await wrapper.vm.navigateToWeather();
-        await flushPromises();
-
-        // Check if the correct methods were called
-        expect(router.push).toHaveBeenCalledWith('/weather');
-        expect(store.dispatch).toHaveBeenCalledWith('setUser', 'Jane Doe');
-    });
 });

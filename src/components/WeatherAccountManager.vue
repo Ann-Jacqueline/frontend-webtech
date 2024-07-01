@@ -129,10 +129,20 @@ async function fetchCityHistory() {
     console.error('Failed to fetch city history:', error);
   }
 }
+// Post city history data
+async function postCityHistory(city) {
+  try {
+    await axios.post(`${store.state.backendUrl}/history`, city);
+    console.log("City history posted:", city);
+  } catch (error) {
+    console.error('Failed to post city history:', error);
+  }
+}
 
 onMounted(() => {
   store.commit('TOGGLE_TEMP_UNIT', 'C'); // Set temperature unit to Celsius on mount
   fetchCityHistory();
+  postCityHistory(city);
 });
 
 onBeforeUnmount(() => {

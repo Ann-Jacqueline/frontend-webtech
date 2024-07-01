@@ -2,6 +2,7 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
 import router from '@/router'
+axios.defaults.withCredentials = false;
 
 // Interface-Definitionen für den Zustand und Wetterdaten
 interface WeatherData {
@@ -269,6 +270,19 @@ const store = createStore<State>({
         console.error("Failed to add city history:", error);
       }
     },
+    async loginUser({ commit, state }, credentials) {
+      try {
+        // Die `withCredentials` Option muss innerhalb der Konfigurationsobjekte der Axios-Anfrage gesetzt werden.
+        const response = await axios.post(`${state.backendUrl}/users/login`, credentials, {
+          withCredentials: true  // Richtig platzierte withCredentials-Option
+        });
+        commit('SET_USER_NAME', response.data.userName);  // Angenommen, dass Backend sendet den Benutzernamen zurück
+        return response.data;
+      } catch (error) {
+        console.error('Login failed:', error);
+        throw error;
+      }
+    },
     async fetchCityHistory({ commit, state }) {
       try {
         const response = await axios.get(`${state.backendUrl}/history`);
@@ -291,9 +305,6 @@ const store = createStore<State>({
     },
     removeCity({ commit }, id) {
       commit('REMOVE_CITY_HISTORY', id);
-    },
-    resetErrorState({ commit }) {
-      commit('RESET_ERROR_STATE');
     },
     setUser({ commit }, userName) {
       commit('SET_USER_NAME', userName);

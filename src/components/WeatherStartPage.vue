@@ -4,20 +4,14 @@ import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import axios, { AxiosError } from 'axios';
 
-// Configuration for the backend URL
 const backendUrl = import.meta.env.VITE_APP_BACKEND_BASE_URL;
-
-// userName ref to hold the state of the username
 const userName = ref('');
 
-// Get instances of useRouter and useStore
 const router = useRouter();
 const store = useStore();
 
-// Ensure axios sends cookies with each request (if your backend requires sessions)
 axios.defaults.withCredentials = true;
 
-// Axios Request Interceptor for logging request details
 axios.interceptors.request.use(config => {
   console.log(`Sending Request to: ${config.url}`, config);
   return config;
@@ -26,7 +20,6 @@ axios.interceptors.request.use(config => {
   return Promise.reject(error);
 });
 
-// Axios Response Interceptor for logging response details
 axios.interceptors.response.use(response => {
   console.log(`Received response from: ${response.config.url}`, response);
   return response;
@@ -35,9 +28,8 @@ axios.interceptors.response.use(response => {
   return Promise.reject(error);
 });
 
-// onMounted lifecycle hook to initialize userName when the component is mounted
 onMounted(() => {
-  userName.value = ''; // Clear userName
+  userName.value = '';
   console.log('Component mounted and userName cleared');
 });
 
@@ -45,15 +37,11 @@ onMounted(() => {
 const navigateToWeather = async () => {
   if (userName.value.trim()) {
     try {
-      // Attempt to log in
-      const loginResponse = await axios.post(`${backendUrl}/users/login`, { userName: userName.value.trim() });
-      if (loginResponse.status === 201) { // Check for successful session creation
-        console.log('Login successful');
-        // Set the userName in the store directly after login
-        await store.dispatch('setUser', userName.value.trim());
-        // Navigate to the weather page
-         router.push('/weather');
-      }
+      // Use the Vuex action to log in
+      await store.dispatch('loginUser', { userName: userName.value.trim() });
+      console.log('Login successful');
+      await fetchUserDetails();  // Fetch user details after successful login
+      router.push('/weather');
     } catch (error) {
       const axiosError = error as AxiosError;
       console.error('Error during login:', axiosError.message);
@@ -62,7 +50,21 @@ const navigateToWeather = async () => {
       }
     }
   }
-}
+};
+
+// Function to fetch user details
+const fetchUserDetails = async () => {
+  try {
+    const userDetailsResponse = await axios.get(`${backendUrl}/users/current`);
+    if (userDetailsResponse.status === 200) {
+      console.log('User details fetched:', userDetailsResponse.data);
+      // Additional processing can be done here
+    }
+  } catch (error) {
+    console.error('Failed to fetch user details:', error);
+  }
+};
+
 defineExpose({
   userName,
   navigateToWeather
