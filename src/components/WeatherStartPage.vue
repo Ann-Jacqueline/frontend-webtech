@@ -2,7 +2,8 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+
 
 // Configuration for the backend URL
 const backendUrl = import.meta.env.VITE_APP_BACKEND_BASE_URL;
@@ -27,9 +28,9 @@ onMounted(() => {
 const navigateToWeather = async () => {
   if (userName.value.trim()) {
     try {
-      // Attempt to login
-      const loginResponse = await axios.post(`${backendUrl}/users/login`, { userName: userName.value.trim() });
-      if (loginResponse.status === 201) { // Check for successful session creation
+      // Directly await the post request and check the status without storing it in a constant
+      const response = await axios.post(`${backendUrl}/users/login`, { userName: userName.value.trim() });
+      if (response.status === 201) { // Check for successful session creation
         console.log('Login successful');
 
         // Fetch current user data post-login
@@ -41,10 +42,17 @@ const navigateToWeather = async () => {
         }
       }
     } catch (error) {
-      console.error('Error during login or fetching user:', error);
+      const axiosError = error as AxiosError; // Cast error to AxiosError
+      console.error('Error during login or fetching user:', axiosError.message);
+      if (axiosError.response && axiosError.response.status === 401) {
+        // Handle 401 error specifically
+        console.error('Session expired or invalid. Please log in again.');
+        // Redirect to log in or show error message
+      }
     }
   }
 }
+
 defineExpose({
   userName,
   navigateToWeather
