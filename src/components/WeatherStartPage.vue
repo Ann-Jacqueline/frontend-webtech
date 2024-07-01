@@ -45,25 +45,24 @@ onMounted(() => {
 const navigateToWeather = async () => {
   if (userName.value.trim()) {
     try {
-      const response = await axios.post(`${backendUrl}/users/login`, { userName: userName.value.trim() });
-      console.log('Login successful');
-
-      const userResponse = await axios.get(`${backendUrl}/users/current`);
-      if (userResponse.data && userResponse.data.userName) {
-        console.log('Current user loaded:', userResponse.data.userName);
-        store.dispatch('setUser', userResponse.data.userName);
-        router.push('/weather');
+      // Attempt to log in
+      const loginResponse = await axios.post(`${backendUrl}/users/login`, { userName: userName.value.trim() });
+      if (loginResponse.status === 201) { // Check for successful session creation
+        console.log('Login successful');
+        // Set the userName in the store directly after login
+        await store.dispatch('setUser', userName.value.trim());
+        // Navigate to the weather page
+         router.push('/weather');
       }
     } catch (error) {
       const axiosError = error as AxiosError;
-      console.error('Error during login or fetching user:', axiosError.message);
+      console.error('Error during login:', axiosError.message);
       if (axiosError.response && axiosError.response.status === 401) {
         console.error('Session expired or invalid. Please log in again.');
       }
     }
   }
 }
-
 defineExpose({
   userName,
   navigateToWeather

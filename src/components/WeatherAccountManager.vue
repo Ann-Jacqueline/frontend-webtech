@@ -49,27 +49,29 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
-axios.defaults.withCredentials = true;
 
-const backendUrl = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 const store = useStore();
 const router = useRouter();
 const showDropdown = ref(false);
-const userName = ref('');
 
-// Konvertiere die Temperatur basierend auf der gewählten Einheit
+// Computed properties to retrieve state from the Vuex store
+const userName = computed(() => store.getters.getUserName);
+const tempUnit = computed(() => store.getters.getTempUnit);
+const defaultSearch = computed(() => store.state.defaultSearch);
+const noCitiesMessage = computed(() => typeof store.getters.getCityHistory === 'string' ? store.getters.getCityHistory : '');
+
+// Convert temperature based on the selected unit
 function convertTemperature(temp) {
   if (store.state.tempUnitStored === tempUnit.value) {
-    return temp; // Keine Umrechnung nötig, bereits in der richtigen Einheit
+    return temp; // No conversion needed if already in the correct unit
   }
-  // Umrechnung erforderlich
+  // Conversion needed
   return tempUnit.value === 'C' ?
       Math.round((temp - 32) * 5 / 9) :
       Math.round(temp * 9 / 5 + 32);
 }
 
-// Stadtverlauf mit dynamisch umgerechneten Temperaturen
+// City history with dynamically converted temperatures
 const cityHistory = computed(() => {
   const history = store.getters.getCityHistory;
   if (typeof history === 'string') {
@@ -81,89 +83,60 @@ const cityHistory = computed(() => {
   }));
 });
 
-const tempUnit = computed(() => store.getters.getTempUnit);
-const defaultSearch = computed(() => store.state.defaultSearch);
-const noCitiesMessage = computed(() => typeof store.getters.getCityHistory === 'string' ? store.getters.getCityHistory : '');
-
+// Toggle dropdown menu
 function toggleDropdown() {
   showDropdown.value = !showDropdown.value;
 }
 
+// Toggle temperature unit
 function toggleTempUnit(unit) {
   store.commit('TOGGLE_TEMP_UNIT', unit);
   toggleDropdown();
 }
 
-async function logOut() {
-  try {
-    await axios.post(`${backendUrl}/users/logout`);
-    store.dispatch('logOut');
+// Logout function
+function logOut() {
+  store.dispatch('logOut').then(() => {
     router.push('/');
-  } catch (error) {
-    console.error('Logout failed:', error);
-  }
+  });
 }
 
-// Funktion zum Setzen der Standardstadt
+// Set default city
 function setAsDefault(cityName) {
   store.dispatch('pinCityAsDefault', cityName).then(() => {
     console.log("Default city set to:", cityName);
   });
 }
 
-// Funktion zum Entfernen einer Stadt
+// Remove a city from the history
 function removeCity(id) {
   store.dispatch('removeCity', id);
 }
 
+// Fetch city history data
 async function fetchCityHistory() {
-  // Lade zuerst den Stadtverlauf aus dem Vuex-Store
-  cityHistory.value = store.getters.getCityHistory.map(city => ({
-    ...city,
-    temp: convertTemperature(city.temp)
-  }));
-
-  // Anfrage an das Backend, um die neuesten Daten abzurufen
   try {
-    const response = await axios.get(`${backendUrl}/history`);
-    if (response.status === 200) {
-      // Aktualisiere den Store nur, wenn die abgerufenen Städte nicht bereits vorhanden sind
-      const newCities = response.data.filter(cityFromBackend =>
-          !store.getters.getCityHistory.some(city => city.id === cityFromBackend.id)
-      );
-      newCities.forEach(city => {
-        store.commit('ADD_CITY_HISTORY', {
-          ...city,
-          temp: convertTemperature(city.temp)
-        });
-      });
+    const history = store.getters.getCityHistory.map(city => ({
+      ...city,
+      temp: convertTemperature(city.temp)
+    }));
+    if (history.length === 0) {
+      console.log("Fetching city history...");
+      // Trigger Vuex action to refresh city history from the backend
+      store.dispatch('fetchCityHistory');
     }
   } catch (error) {
-    console.error('Failed to fetch city history from backend:', error);
-  }
-}
-
-async function fetchUserName() {
-  try {
-    const response = await axios.get(`${backendUrl}/users/current`, {
-      withCredentials: true
-    });
-    if (response.status === 200) {
-      userName.value = response.data.userName;
-    }
-  } catch (error) {
-    console.error('Failed to fetch current user:', error);
+    console.error('Failed to fetch city history:', error);
   }
 }
 
 onMounted(() => {
-  store.commit('TOGGLE_TEMP_UNIT', 'C'); // Setze Temperatureinheit auf Celsius beim Mounten
+  store.commit('TOGGLE_TEMP_UNIT', 'C'); // Set temperature unit to Celsius on mount
   fetchCityHistory();
-  fetchUserName();
 });
 
 onBeforeUnmount(() => {
-  store.commit('TOGGLE_TEMP_UNIT', 'C'); // Setze Temperatureinheit auf Celsius beim Verlassen der Seite
+  store.commit('TOGGLE_TEMP_UNIT', 'C'); // Reset temperature unit to Celsius on unmount
 });
 </script>
 

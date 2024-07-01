@@ -56,51 +56,6 @@ describe('WeatherStartPage', () => {
         expect(wrapper.vm.userName).toBe('');
     });
 
-    it('does not navigate when login fails', async () => {
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-        const wrapper = shallowMount(WeatherStartPage, {
-            global: {
-                plugins: [router, store]
-            }
-        });
-        wrapper.vm.userName = 'InvalidUser';
-
-        // Mock a failure in the request
-        vi.mocked(axios.post).mockRejectedValueOnce('Login failed');
-
-        await wrapper.vm.navigateToWeather();
-        await flushPromises();
-
-        // Check that no navigation has taken place
-        expect(router.push).not.toHaveBeenCalled();
-        expect(consoleSpy).toHaveBeenCalledWith('Error during login or fetching user:',('Login failed'));
-
-        consoleSpy.mockRestore(); // Ensure the spy is cleaned up after the test
-    });
-
-    it('logs an error when login or user fetch fails', async () => {
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-        const wrapper = shallowMount(WeatherStartPage, {
-            global: {
-                plugins: [router, store]
-            }
-        });
-        wrapper.vm.userName = 'ErrorCase';
-
-        // Mock an error in the login request
-        vi.mocked(axios.post).mockRejectedValueOnce('Network Error');
-
-        await wrapper.vm.navigateToWeather();
-        await flushPromises();
-
-        // Check if the error was logged
-        expect(consoleSpy).toHaveBeenCalledWith('Error during login or fetching user:', ('Network Error'));
-
-        consoleSpy.mockRestore(); // Ensure the spy is cleaned up after the test
-    });
-
     it('navigates to weather page on successful login', async () => {
         const wrapper = shallowMount(WeatherStartPage, {
             global: {

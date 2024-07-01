@@ -277,15 +277,14 @@ const store = createStore<State>({
         console.error("Failed to fetch city history:", error);
       }
     },
-    async logOut({ commit, state }) {
-      try {
-        await axios.post(`${state.backendUrl}/users/logout`);
-        commit('LOGOUT_USER');
-        router.push('/');
-      } catch (error) {
-        console.error("Failed to log out user:", error);
-        commit('SET_ERROR', true);
-      }
+    logOut({ commit }) {
+      commit('REMOVE_USER_NAME'); // Clear the username from the Vuex state
+      commit('CLEAR_CITY_HISTORY'); // Clear any city history data stored in Vuex
+
+      // Redirect the user to the home page
+      router.push('/').then(() => {
+        console.log('User logged out and redirected to home page.');
+      });
     },
     pinCityAsDefault({ commit }, cityName) {
       commit('SET_DEFAULT_SEARCH', cityName);
