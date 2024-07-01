@@ -1,3 +1,10 @@
+/**
+* Diese Datei enthält die"WeatherAccount", die das Benutzerkonto und das Wetter-Dashboard darstellt.
+*
+* Die Komponente zeigt den Benutzernamen an und ermöglicht das Ausloggen, das Einstellen der Standard-Stadt, das Löschen von gespeicherten Städten,
+* die Auswahl der Temperaturskala zwischen Celsius und Fahrenheit, und bietet eine Navigationsleiste zum Wetter-Suchbereich.
+**/
+
 <template>
   <div class="weather-account">
     <div class="fog-animation"></div>

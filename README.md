@@ -1,45 +1,14 @@
-# vue-project
+Frontend teil der WeatherWorks Wetter App.
+Die Datenverwaltung läuft einmal mit einer eigenen Zustandsverwaltung dem store.ts und dem Backend durch axios Aufrufe
+Die App Hat 4 Base Komponenten die Sich um die Optik und Wetterdatenbereitstellung kümmern: 
+WeatherSearch kümmert sich um die Suchfunktionalität
+WeatherInfo: kümmert sich um Basis Infos wie die Windgeschwindigkeit, Luftfeuchtigkeit und wie bewölkt es ist
+WeatherAnimate: kümmert sich um die Animationen der App die mit den wetterdaten korrespondiert
+WeatherMain: Kümmert sich um die Detaillieren Wetter infos wie der Temperatur und weitern Wetterdaten
 
-This template should help get you started developing with Vue 3 in Vite.
+Die Haupt Komponenten
+WeatherEntry, WeatherStartpage und WeatherAccountManager sind die Haupt views der App und zeigen Die login Seite, Die Mainpage und die User Account Seite und binden die 
+Basis Komponenten ein
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS.
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+Credential Handling: Der Schlüssel zu der API ist in beiden Environments verschlüsselt und der Schlüssel würde auf render 
+hinterlegt.

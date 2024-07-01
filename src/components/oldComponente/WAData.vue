@@ -1,3 +1,14 @@
+/**
+* Veraltete Komponete
+* Diese Komponente verwaltet die Verwaltung von Städte-Einträgen über einen RESTful Service.
+* Benutzer können Städte hinzufügen, entfernen und verschiedene Tabs (Standorte, Favoriten,
+* Reisepläne) navigieren.
+*
+* <p>Die Komponente verwendet Vue Composition API und axios für HTTP-Anfragen an den
+* Backend-Service. Sie unterstützt das Abrufen von Städte-Einträgen beim Laden der
+* Komponente und ermöglicht das Hinzufügen neuer Städte sowie das Entfernen vorhandener
+* Städte über RESTful Endpunkte.
+*/
 <script>
 import axios from 'axios';
 export default {

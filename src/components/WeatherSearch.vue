@@ -1,3 +1,16 @@
+/**
+* Diese Vue-Komponente ermöglicht die Suche nach Wetterinformationen für eine bestimmte Stadt.
+* Benutzer können den Stadtnamen eingeben und durch Drücken der Eingabetaste oder durch Klicken
+* auf die Schaltfläche die Wetterdaten abrufen.
+*
+* Die Komponente verwendet Vuex für den Zustandsmanagement und die Datenspeicherung. Sobald der
+* Benutzer eine Suche durchführt, werden die aktuellen Wetterdaten sowie das Land, das Datum und
+* die lokale Uhrzeit angezeigt. Fehlermeldungen werden angezeigt, wenn die Suche keine Ergebnisse
+* liefert.
+*
+* Die lokale Uhrzeit und das Datum werden basierend auf der Zeitzone der abgerufenen Wetterdaten
+  * berechnet und angezeigt.
+  */
 <template>
   <div class="weather-search">
     <input

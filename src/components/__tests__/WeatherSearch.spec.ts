@@ -1,3 +1,11 @@
+/**
+ * Unit-Tests für die WeatherSearch-Komponente.
+ *
+ * <p>Diese Testklasse überprüft das korrekte Initialisieren der WeatherSearch-Komponente
+ * und das Aufrufen der fetchWeatherData-Aktion beim Drücken der Enter-Taste. Es verwendet
+ * Vue Test Utils zum Mounten der Komponente und Vuex für das State-Management.
+ */
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { flushPromises, shallowMount } from '@vue/test-utils';
 import { createStore, type Store } from 'vuex';
@@ -5,6 +13,10 @@ import WeatherSearch from '@/components/WeatherSearch.vue';
 
 describe('WeatherSearch', () => {
     let store: Store<any>;
+    /**
+     * Richtet den Vuex-Store mit dem Anfangszustand, den Gettern und den Aktionen vor jedem Testfall ein.
+     * Setzt alle Mock-Funktionen mit vi.resetAllMocks() zurück und überwacht store.dispatch.
+     */
 
     beforeEach(() => {
         store = createStore({
@@ -32,7 +44,9 @@ describe('WeatherSearch', () => {
         // Spy on store.dispatch
         vi.spyOn(store, 'dispatch');
     });
-
+    /**
+     * Testet, ob die Komponente mit einem leeren Suchfeld initialisiert wird.
+     */
     it('initializes with an empty search on mount', () => {
         const wrapper = shallowMount(WeatherSearch, {
             global: {
@@ -41,7 +55,9 @@ describe('WeatherSearch', () => {
         });
         expect(wrapper.vm.search).toBe('');
     });
-
+    /**
+     * Testet, ob fetchWeatherData beim Drücken der Enter-Taste aufgerufen wird.
+     */
     it('calls fetchWeatherData on enter key press', async () => {
         const wrapper = shallowMount(WeatherSearch, {
             global: {

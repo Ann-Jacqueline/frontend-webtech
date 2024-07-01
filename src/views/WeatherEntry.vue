@@ -1,3 +1,9 @@
+/**
+* Hauptkomponente der Wetteranwendung.
+* Diese Komponente rendert die Benutzeroberfläche, einschließlich Navigation, Wetterdaten und Animationen.
+*
+* @component
+*/
 <template>
   <div id="app" class="app">
     <nav id="nav" class="nav" :class="weatherClass">
@@ -47,16 +53,27 @@ export default {
     const backendUrl = import.meta.env.VITE_APP_BACKEND_BASE_URL;
     axios.defaults.withCredentials = false;
 
+    /**
+     * Ruft den Benutzernamen aus dem Store ab.
+     */
     function fetchUserName() {
       userName.value = store.getters.getUserName;
     }
 
     onMounted(fetchUserName);
 
+    /**
+     * Navigiert zur Wetterseite.
+     */
     function navigateToWeather() {
       router.push('/account');
     }
 
+    /**
+     * Protokolliert die Stadt, die vom Benutzer gesucht wurde.
+     * @param {string} cityName - Der Name der Stadt.
+     * @param {Object} cityData - Die Daten der Stadt.
+     */
     async function logCitySearch(cityName, cityData) {
       try {
         const cityPayload = {
@@ -66,14 +83,14 @@ export default {
           localtime: cityData.localtime,
         };
 
-        // Send to backend
+        // Sendet die Daten an das Backend
         await axios.post(`${backendUrl}/city`, cityPayload);
 
-        // Log in store
+        // Protokolliert die Daten im Store
         await store.dispatch('addCityHistory', cityPayload);
-        console.log('City search logged successfully');
+        console.log('Stadt erfolgreich protokolliert');
       } catch (error) {
-        console.error('Error logging city search:', error);
+        console.error('Fehler beim Protokollieren der Stadt:', error);
       }
     }
 
@@ -90,6 +107,10 @@ export default {
       getWeatherMain: 'getWeatherMain',
       weatherInfo: 'getWeatherMain' // Stellt sicher, dass dies korrekt aus dem Store abgerufen wird
     }),
+    /**
+     * Berechnet die CSS-Klasse basierend auf den Wetterinformationen.
+     * @returns {Object} Die CSS-Klassen für das aktuelle Wetter.
+     */
     weatherClass() {
       return {
         'weather-clear': this.weatherInfo === 'Clear',
@@ -106,6 +127,9 @@ export default {
       fetchWeatherData: 'fetchWeatherData',
       logOut: 'logOut'
     }),
+    /**
+     * Initialisiert die Wetterdaten.
+     */
     initData() {
       this.fetchWeatherData(this.$store.state.defaultSearch);
     }
@@ -115,6 +139,7 @@ export default {
   }
 };
 </script>
+
 
 
 

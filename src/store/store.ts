@@ -1,3 +1,13 @@
+/**
+ * Dieses Vuex-Store-Konfigurationsskript definiert den Zustands- und Aktions-Store für eine Wetteranwendungs-Webseite.
+ * Es verwendet Vuex zur zentralen Zustandsverwaltung von Wetterdaten, Benutzereinstellungen und Stadtverlaufsinformationen.
+ *
+ * Der Store umfasst:
+ * - Definition des initialen Zustands mit Basis-URLs, Standardwerten und leeren Datenstrukturen.
+ * - Getters zur Bereitstellung von abgeleiteten Zustandsinformationen.
+ * - Mutationen zur synchronen Änderung des Zustands.
+ * - Aktionen zur asynchronen Datenbeschaffung und zur Interaktion mit dem Backend.
+ */
 import { createStore } from 'vuex';
 import axios from 'axios';
 import router from '@/router';

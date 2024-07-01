@@ -1,3 +1,10 @@
+/**
+ * Unit-Tests für die WeatherInfo-Komponente.
+ *
+ * Diese Testklasse überprüft die korrekte Anzeige der Wetterinformationen
+ * in der WeatherInfo-Komponente. Es verwendet Vue Test Utils zum Mounten der
+ * Komponente und Vuex für das State-Management.
+ */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 import { createStore, type Store } from 'vuex';
@@ -6,6 +13,10 @@ import WeatherInfo from '@/components/WeatherInfo.vue';
 describe('WeatherInfo', () => {
     let store: Store<any>;
 
+    /**
+     * Richtet den Vuex-Store mit dem Anfangszustand und den Gettern vor jedem Testfall ein.
+     * Setzt alle Mock-Funktionen mit vi.resetAllMocks() zurück.
+     */
     beforeEach(() => {
         store = createStore({
             state: {
@@ -26,7 +37,9 @@ describe('WeatherInfo', () => {
 
         vi.resetAllMocks();
     });
-
+    /**
+     * Testet, ob die Wetterinformationen korrekt angezeigt werden.
+     */
     it('displays weather information correctly', () => {
         const wrapper = shallowMount(WeatherInfo, {
             global: {
@@ -42,7 +55,9 @@ describe('WeatherInfo', () => {
         expect(humidity.text()).toBe('70%');
         expect(clouds.text()).toBe('50%');
     });
-
+    /**
+     * Testet, ob 'N/A' angezeigt wird, wenn Daten fehlen.
+     */
     it('displays N/A if data is missing', async () => {
         store.state.weatherData = {};
 

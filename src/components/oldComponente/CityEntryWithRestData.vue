@@ -1,7 +1,17 @@
+/**
+* Veraltete Komponente
+* Diese Komponente ermöglicht das Hinzufügen, Abrufen und Entfernen von Städteeinträgen
+* von einem Backend-Service. Sie bietet auch eine einfache Navigation zwischen verschiedenen
+* Tabs (Standorte, Favoriten, Reisepläne).
+*
+* Die Komponente verwendet axios für HTTP-Anfragen und Vue Composition API für
+* den Komponentenstatus und Lebenszyklus-Hooks.
+*/
+
 <script setup lang="ts">
 import { onMounted, ref, type Ref } from 'vue';
 import axios from 'axios';
-// Inside your <script> tag
+
 
 
 

@@ -1,3 +1,16 @@
+/**
+* Diese Vue-Komponente zeigt grundlegende Wetterinformationen wie Windgeschwindigkeit, Luftfeuchtigkeit
+* und Bewölkung an. Jede Information wird mit einem entsprechenden Symbol und dem aktuellen Wert
+* formatiert und angezeigt.
+*
+* Die Komponente verwendet Vuex-Getters, um die aktuellen Wetterinformationen abzurufen und in der
+* Benutzeroberfläche anzuzeigen. Die Informationen werden in einem flexiblen Layout angeordnet, das
+* Platz für jedes Wetterelement bietet.
+*
+* Bei der Montage der Komponente werden die geladenen Wetterinformationen in der Konsole protokolliert,
+  * um die Aktualisierung der Benutzeroberfläche zu verfolgen und sicherzustellen, dass die richtigen
+  * Informationen angezeigt werden.
+  */
 <template>
   <div class="weather-info">
     <div class="weather-item" title="Wind speed">

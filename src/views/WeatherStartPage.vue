@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Skript für die Startseite der Wetteranwendung.
+ * Verwaltet die Benutzeranmeldung und Navigationslogik sowie die API-Kommunikation.
+ */
+
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
@@ -11,6 +16,9 @@ const store = useStore();
 
 axios.defaults.withCredentials = true;
 
+/**
+ * Interceptor für ausgehende Anfragen, um Informationen über die Anfrage zu protokollieren.
+ */
 axios.interceptors.request.use(config => {
   console.log(`Sending Request to: ${config.url}`, config);
   return config;
@@ -19,6 +27,9 @@ axios.interceptors.request.use(config => {
   return Promise.reject(error);
 });
 
+/**
+ * Interceptor für eingehende Antworten, um Informationen über die Antwort zu protokollieren.
+ */
 axios.interceptors.response.use(response => {
   console.log(`Received response from: ${response.config.url}`, response);
   return response;
@@ -27,17 +38,28 @@ axios.interceptors.response.use(response => {
   return Promise.reject(error);
 });
 
+/**
+ * Lifecycle-Hook, der ausgeführt wird, wenn die Komponente gemountet wird.
+ * Setzt den Benutzernamen zurück und protokolliert eine Nachricht.
+ */
 onMounted(() => {
   userName.value = '';
   console.log('Component mounted and userName cleared');
 });
 
+/**
+ * Navigiert zur Wetterseite, nachdem der Benutzer erfolgreich eingeloggt wurde.
+ */
 const navigateToWeather = async () => {
   if (userName.value.trim()) {
     try {
+      // Dispatch zur Anmeldung des Benutzers
       await store.dispatch('loginUser', { userName: userName.value.trim() });
+
+      // Anfrage an das Backend zur Benutzerauthentifizierung
       const loginResponse = await axios.post(`${backendUrl}/users/login`, { userName: userName.value.trim() });
-      if (loginResponse.status === 201) { // Check for successful session creation
+
+      if (loginResponse.status === 201) { // Überprüfung auf erfolgreiche Session-Erstellung
         console.log('Login successful');
         router.push('/weather');
       }

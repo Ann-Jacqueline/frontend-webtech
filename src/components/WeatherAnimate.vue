@@ -1,4 +1,17 @@
-
+/**
+* Diese Vue-Komponente stellt eine dynamisch animierte Hintergrundgrafik dar, die je nach
+* Wetterbedingungen variierende Hintergrundbilder anzeigt. Die Komponente verwendet CSS-Klassen,
+* um das Hintergrundbild entsprechend der aktuellen Wetterinformationen zu aktualisieren und
+* animieren.
+*
+* Die Komponente verwendet Vuex-Getters, um Informationen über das aktuelle Wetter und
+* mögliche Fehler zu erhalten, die dann zur Klassenbindung verwendet werden, um das richtige
+* Hintergrundbild anzuzeigen. Unterstützte Wetterbedingungen umfassen Regen, Schnee, klares
+* Wetter, Bewölkung, Nebel, Gewitter und Fehlerzustände.
+*
+* Die animierten CSS-Eigenschaften werden verwendet, um eine fließende Bewegung der
+  * Hintergrundbilder zu erzeugen und ein immersives visuelles Erlebnis für Benutzer zu bieten.
+  */
 <template>
   <div>
     <div

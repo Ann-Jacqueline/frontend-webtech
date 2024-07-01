@@ -1,4 +1,22 @@
-<script setup>
+
+/**
+* Diese Vue-Komponente zeigt die Hauptwetterinformationen an, einschließlich der aktuellen Temperatur,
+* gefühlten Temperatur, Wetterbeschreibung und bietet eine Einstellungsoption für die Temperaturskala
+* (Celsius oder Fahrenheit). Die Komponente verwendet Vuex zur Verwaltung des Zustands und der Getter
+* zum Abrufen der aktuellen Wetterdaten.
+*
+* Die Temperatureinheit kann umgeschaltet werden, wobei die Temperaturen automatisch in die
+* entsprechende Einheit umgerechnet werden. Die Einstellungsoptionen werden über ein Dropdown-Menü
+* bereitgestellt, das durch Klicken auf das Zahnrad-Symbol aktiviert wird.
+*
+* Die Hauptwetterinformationen wie gefühlte Temperatur, aktuelle Temperatur und Wetterbeschreibung
+  * werden in einem zentrierten Layout angezeigt. Die Temperatur wird gerundet und mit der entsprechenden
+  * Einheit angezeigt.
+  *
+  * Bei der Montage der Komponente werden die geladenen Hauptwetterinformationen in der Konsole
+    * protokolliert, um die Aktualisierung der Benutzeroberfläche zu verfolgen und sicherzustellen, dass
+    * die richtigen Informationen angezeigt werden.
+    */<script setup>
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { round } from '@popperjs/core/lib/utils/math.js'

@@ -1,4 +1,8 @@
-
+/**
+* Veraltete Komponete für Wetterempfehlungen.
+* Diese Komponente integriert mehrere Unterkomponenten und stellt die Hauptbenutzeroberfläche der Anwendung dar.
+*
+*/
 <script>
 import WeatherSearch from "@/components/WeatherSearch.vue";
 import WeatherMain from "@/components/WeatherMain.vue";
