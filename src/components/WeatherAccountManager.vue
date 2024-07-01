@@ -49,6 +49,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const store = useStore();
 const router = useRouter();
@@ -112,6 +113,9 @@ function setAsDefault(cityName) {
 function removeCity(id) {
   store.dispatch('removeCity', id);
 }
+function fetchUserName() {
+  userName.value = store.getters.getUserName;
+}
 
 // Fetch city history data
 async function fetchCityHistory() {
@@ -122,33 +126,50 @@ async function fetchCityHistory() {
     }));
     if (history.length === 0) {
       console.log("Fetching city history...");
-      // Trigger Vuex action to refresh city history from the backend
       store.dispatch('fetchCityHistory');
     }
   } catch (error) {
     console.error('Failed to fetch city history:', error);
   }
 }
+
 // Post city history data
 async function postCityHistory(city) {
+  const payload = {
+    cityName: store.state.search, // Get city name from the search state
+    country: store.getters.getWeatherCountry, // Get country from the store
+    temperature: store.getters.getWeatherMain.temp, // Get temperature from the store
+    localTime: city.localTime,
+    owner: store.getters.getUserName // Get owner from the state userName
+  };
+
   try {
-    await axios.post(`${store.state.backendUrl}/history`, city);
-    console.log("City history posted:", city);
+    await axios.post(`${store.state.backendUrl}/history`, payload);
+    console.log("City history posted:", payload);
   } catch (error) {
     console.error('Failed to post city history:', error);
   }
 }
 
-onMounted(() => {
-  store.commit('TOGGLE_TEMP_UNIT', 'C'); // Set temperature unit to Celsius on mount
-  fetchCityHistory();
-  postCityHistory(city);
+onMounted(async () => {
+  store.commit('TOGGLE_TEMP_UNIT', 'C');
+  await fetchCityHistory();
+  fetchUserName();
+  const history = store.getters.getCityHistory;
+  if (typeof history !== 'string') {
+    for (const city of history) {
+      await postCityHistory(city);
+    }
+  }
 });
 
 onBeforeUnmount(() => {
-  store.commit('TOGGLE_TEMP_UNIT', 'C'); // Reset temperature unit to Celsius on unmount
+  store.commit('TOGGLE_TEMP_UNIT', 'C');
 });
 </script>
+
+
+
 
 
 

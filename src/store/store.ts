@@ -1,10 +1,9 @@
-// store.ts
 import { createStore } from 'vuex';
 import axios from 'axios';
-import router from '@/router'
+import router from '@/router';
+
 axios.defaults.withCredentials = false;
 
-// Interface-Definitionen für den Zustand und Wetterdaten
 interface WeatherData {
   name?: string;
   temp?: number;
@@ -14,7 +13,7 @@ interface WeatherData {
   description?: string;
   icon?: string;
   info?: string;
-  wind?: { speed: number};
+  wind?: { speed: number };
   humidity?: number;
   clouds?: { all: number };
   country?: string;
@@ -35,22 +34,21 @@ interface Sys {
   sunrise?: number;
   sunset?: number;
 }
+
 interface CityHistoryEntry {
   id: number;
   name: string;
   description?: string;
-  country?: string;  // Hinzufügen des Landes
-  temp?: number; // Aktuelle Temperatur
-  date: string; // Aktuelles Datum
-  localTime: string; // Lokale Zeit basierend auf der Zeitzone
+  country?: string;
+  temp?: number;
+  date: string;
+  localTime: string;
 }
-
-
 
 interface State {
   apiBase: string;
   apiKey: string;
-  backendUrl:string;
+  backendUrl: string;
   defaultSearch: string;
   search: string;
   weatherData: WeatherData;
@@ -60,28 +58,26 @@ interface State {
   timezone?: number;
   cityHistory: CityHistoryEntry[];
   userName?: string;
-  tempUnit: string; // 'C' für Celsius, 'F' für Fahrenheit
-  tempUnitStored?: string; // Die Einheit, in der die aktuellen Daten gespeichert sind.
+  tempUnit: string;
+  tempUnitStored?: string;
 }
 
-
-// Vuex Store erstellen
 const store = createStore<State>({
   state: {
     apiBase: "https://api.openweathermap.org/data/2.5/",
     apiKey: import.meta.env.VITE_APP_API_KEY,
     backendUrl: import.meta.env.VITE_APP_BACKEND_BASE_URL,
-    defaultSearch:  "Berlin",
+    defaultSearch: "Berlin",
     search: "",
     weatherData: {},
     isError: false,
     coord: {},
     sys: {},
     timezone: 0,
-    cityHistory:[],
-    userName:"",
-    tempUnit: 'C', // Standardmäßig Celsius
-    tempUnitStored: 'C' // Die Einheit, in der die aktuellen Daten gespeichert sind.
+    cityHistory: [],
+    userName: "",
+    tempUnit: 'C',
+    tempUnitStored: 'C'
   },
   getters: {
     getWeatherMain: (state) => {
@@ -107,32 +103,26 @@ const store = createStore<State>({
       }
       return Array.isArray(state.cityHistory) ? state.cityHistory : [];
     }
-
   },
   mutations: {
     RECALCULATE_TEMPERATURES(state) {
-      // Definiere die Funktion mit expliziter Typangabe für den Parameter temp
       const convertTemp = (temp: number | undefined): number | undefined => {
         if (temp !== undefined) {
           const factor = state.tempUnit === 'C' ? 5 / 9 : 9 / 5;
           const offset = state.tempUnit === 'C' ? -32 : 32;
           return Math.round((temp + offset) * factor);
         }
-        return temp; // Rückgabe des unveränderten Werts, falls undefined
+        return temp;
       };
 
-      // Anwenden der Umrechnungsfunktion auf alle Temperaturwerte
       state.weatherData.temp = convertTemp(state.weatherData.temp);
       state.weatherData.tempMin = convertTemp(state.weatherData.tempMin);
       state.weatherData.tempMax = convertTemp(state.weatherData.tempMax);
       state.weatherData.feelsLike = convertTemp(state.weatherData.feelsLike);
     },
-
-    // Umschalten der Temperatureinheit und Auslösen der Temperaturumrechnung
     TOGGLE_TEMP_UNIT(state, newUnit) {
       if (state.tempUnit !== newUnit) {
         state.tempUnit = newUnit;
-        // Trigger a re-calculation of temperatures
         this.RECALCULATE_TEMPERATURES(state);
       }
     },
@@ -156,12 +146,11 @@ const store = createStore<State>({
       state.defaultSearch = cityName;
     },
     ADD_CITY_HISTORY(state, newCity) {
-      // Überprüfe, ob die Stadt bereits existiert basierend auf dem Namen
       const existingCity = state.cityHistory.find(city => city.name === newCity.name);
       if (!existingCity) {
-        state.cityHistory.unshift(newCity); // Füge die Stadt hinzu, wenn sie noch nicht existiert
+        state.cityHistory.unshift(newCity);
         if (state.cityHistory.length > 5) {
-          state.cityHistory.pop(); // Entferne das älteste Element, wenn die Liste zu lang wird
+          state.cityHistory.pop();
         }
       }
     },
@@ -174,12 +163,11 @@ const store = createStore<State>({
     SET_WEATHER_DATA(state, data) {
       const convertTemp = (temp: number, from: string, to: string): number => {
         if (from === to) {
-          return temp; // Keine Umrechnung notwendig
+          return temp;
         }
         return to === 'C' ? Math.round((temp - 32) * 5 / 9) : Math.round(temp * 9 / 5 + 32);
       };
 
-      // Stelle sicher, dass die Temperaturen in der gespeicherten Einheit konvertiert werden
       state.weatherData = {
         name: data.name,
         temp: convertTemp(data.main.temp, 'C', state.tempUnit),
@@ -197,17 +185,13 @@ const store = createStore<State>({
         visibility: data.visibility,
         timezone: data.timezone
       };
-      state.tempUnitStored = state.tempUnit; // Aktualisiere die gespeicherte Einheit
-      // Save coordination and time data
+      state.tempUnitStored = state.tempUnit;
       state.coord = data.coord;
       state.sys = data.sys;
       state.timezone = data.timezone;
     },
     SET_USER_NAME(state, userName: string) {
       state.userName = userName;
-    },
-    LOGOUT_USER(state) {
-      state.userName = "";
     },
     REMOVE_USER_NAME(state) {
       state.userName = "";
@@ -216,7 +200,6 @@ const store = createStore<State>({
       state.cityHistory = [];
     },
     SET_ERROR(state, value) {
-      // Set error state
       state.isError = value;
     },
     REMOVE_CITY_HISTORY(state, id: number) {
@@ -270,18 +253,8 @@ const store = createStore<State>({
         console.error("Failed to add city history:", error);
       }
     },
-    async loginUser({ commit, state }, credentials) {
-      try {
-        // Die `withCredentials` Option muss innerhalb der Konfigurationsobjekte der Axios-Anfrage gesetzt werden.
-        const response = await axios.post(`${state.backendUrl}/users/login`, credentials, {
-          withCredentials: true  // Richtig platzierte withCredentials-Option
-        });
-        commit('SET_USER_NAME', response.data.userName);  // Angenommen, dass Backend sendet den Benutzernamen zurück
-        return response.data;
-      } catch (error) {
-        console.error('Login failed:', error);
-        throw error;
-      }
+    async loginUser({ commit }, credentials) {
+      commit('SET_USER_NAME', credentials.userName);
     },
     async fetchCityHistory({ commit, state }) {
       try {
@@ -292,10 +265,8 @@ const store = createStore<State>({
       }
     },
     logOut({ commit }) {
-      commit('REMOVE_USER_NAME'); // Clear the username from the Vuex state
-      commit('CLEAR_CITY_HISTORY'); // Clear any city history data stored in Vuex
-
-      // Redirect the user to the home page
+      commit('REMOVE_USER_NAME');
+      commit('CLEAR_CITY_HISTORY');
       router.push('/').then(() => {
         console.log('User logged out and redirected to home page.');
       });
@@ -310,7 +281,6 @@ const store = createStore<State>({
       commit('SET_USER_NAME', userName);
     }
   }
-
 })
 
-export default store
+export default store;

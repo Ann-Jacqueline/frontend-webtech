@@ -12,7 +12,7 @@
     </nav>
     <transition name="fade" mode="out-in" appear>
       <div class="card">
-        <WeatherSearch  @city-searched="logCitySearch" />
+        <WeatherSearch @city-searched="logCitySearch" />
         <WeatherMain />
         <WeatherInfo />
       </div>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { ref, onMounted} from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore, mapGetters, mapActions } from 'vuex';
 import WeatherSearch from "@/components/WeatherSearch.vue";
@@ -45,20 +45,10 @@ export default {
     const userName = ref('');
 
     const backendUrl = import.meta.env.VITE_APP_BACKEND_BASE_URL;
-    axios.defaults.withCredentials = false; // Globale Konfiguration für alle Anfragen
+    axios.defaults.withCredentials = false;
 
-    async function fetchUserName() {
-
-      try {
-        const response = await axios.get(`${backendUrl}/users/current`, {
-          withCredentials: true
-        });
-        if (response.status === 200) {
-          userName.value = response.data.userName;
-        }
-      } catch (error) {
-        console.error('Failed to fetch current user:', error);
-      }
+    function fetchUserName() {
+      userName.value = store.getters.getUserName;
     }
 
     onMounted(fetchUserName);
@@ -125,6 +115,7 @@ export default {
   }
 };
 </script>
+
 
 
 

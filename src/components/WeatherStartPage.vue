@@ -6,7 +6,6 @@ import axios, { AxiosError } from 'axios';
 
 const backendUrl = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 const userName = ref('');
-
 const router = useRouter();
 const store = useStore();
 
@@ -33,15 +32,15 @@ onMounted(() => {
   console.log('Component mounted and userName cleared');
 });
 
-// Function to navigate to the weather page after successful login
 const navigateToWeather = async () => {
   if (userName.value.trim()) {
     try {
-      // Use the Vuex action to log in
       await store.dispatch('loginUser', { userName: userName.value.trim() });
-      console.log('Login successful');
-      await fetchUserDetails();  // Fetch user details after successful login
-      router.push('/weather');
+      const loginResponse = await axios.post(`${backendUrl}/users/login`, { userName: userName.value.trim() });
+      if (loginResponse.status === 201) { // Check for successful session creation
+        console.log('Login successful');
+        router.push('/weather');
+      }
     } catch (error) {
       const axiosError = error as AxiosError;
       console.error('Error during login:', axiosError.message);
@@ -52,24 +51,13 @@ const navigateToWeather = async () => {
   }
 };
 
-// Function to fetch user details
-const fetchUserDetails = async () => {
-  try {
-    const userDetailsResponse = await axios.get(`${backendUrl}/users/current`);
-    if (userDetailsResponse.status === 200) {
-      console.log('User details fetched:', userDetailsResponse.data);
-      // Additional processing can be done here
-    }
-  } catch (error) {
-    console.error('Failed to fetch user details:', error);
-  }
-};
-
 defineExpose({
   userName,
   navigateToWeather
 });
 </script>
+
+
 
 
 
