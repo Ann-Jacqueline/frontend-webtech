@@ -72,6 +72,7 @@ defineExpose({
 
 
 
+
 <template>
   <div class="start-page">
     <div class="fog-animation"></div>
