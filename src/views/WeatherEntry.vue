@@ -3,12 +3,12 @@
     <nav id="nav" class="nav" :class="weatherClass">
       <div class="user-profile">
         <div class="profile-pic-container">
-          <img src="@/assets/images/profile-pic.png" alt="User" class="user-pic">
+          <img src="../assets/images/profile-pic.png" alt="User" class="user-pic">
           <button class="invisible-button" @click="navigateToWeather"></button>
         </div>
         <span class="user-name">{{ userName }}</span>
       </div>
-      <img src="@/assets/images/weatherworks ohne backround.png" alt="Logo" class="logo">
+      <img src="../assets/images/weatherworks%20ohne%20backround.png" alt="Logo" class="logo">
     </nav>
     <transition name="fade" mode="out-in" appear>
       <div class="card">

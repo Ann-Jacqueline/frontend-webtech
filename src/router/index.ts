@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import WeatherEntry from '@/components/WeatherEntry.vue';
-import UserAccount from '@/components/WeatherAccountManager.vue';
-import WeatherStartPage from '@/components/WeatherStartPage.vue';
-import WeatherRecommendations from '@/components/oldComponente/WeatherRecommendations.vue';
+import WeatherEntry from '@/views/WeatherEntry.vue';
+import UserAccount from '@/views/WeatherAccountManager.vue';
+import WeatherStartPage from '@/views/WeatherStartPage.vue';
+
 
 
 
@@ -24,11 +24,6 @@ const router = createRouter({
       name: 'Account',
       component: UserAccount
     },
-    {
-      path: '/recommendations',
-      name: 'Recommendations',
-      component: WeatherRecommendations
-    }
   ]
 })
 

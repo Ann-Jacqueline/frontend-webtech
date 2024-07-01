@@ -3,7 +3,7 @@ import { flushPromises, shallowMount } from '@vue/test-utils';
 import { createRouter, createWebHistory, type Router } from 'vue-router';
 import { createStore, type Store } from 'vuex';
 import axios from 'axios';
-import WeatherStartPage from '@/components/WeatherStartPage.vue';
+import WeatherStartPage from '../../views/WeatherStartPage.vue';
 
 // Mock axios
 vi.mock('axios');

@@ -95,7 +95,7 @@ html, body {
   margin: 0; /* Remove default margin */
 }
 #app {
-  background-image: url("../assets/images/Main Backround.jpg"); /* Ensure this path is correct */
+  background-image: url("../../assets/images/Main Backround.jpg"); /* Ensure this path is correct */
   background-size: cover;
   background-position: center;
   position: absolute; /* Absolute positioning relative to the nearest positioned ancestor */
