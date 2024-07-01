@@ -127,15 +127,15 @@ async function fetchCityHistory() {
   try {
     const response = await axios.get(`${backendUrl}/history`);
     if (response.status === 200) {
-      // Nur Städte hinzufügen, die noch nicht im Store sind
-      response.data.forEach(cityFromBackend => {
-        const exists = store.getters.getCityHistory.some(city => city.name === cityFromBackend.name);
-        if (!exists) {
-          store.commit('ADD_CITY_HISTORY', {
-            ...cityFromBackend,
-            temp: convertTemperature(cityFromBackend.temp)
-          });
-        }
+      // Aktualisiere den Store nur, wenn die abgerufenen Städte nicht bereits vorhanden sind
+      const newCities = response.data.filter(cityFromBackend =>
+          !store.getters.getCityHistory.some(city => city.id === cityFromBackend.id)
+      );
+      newCities.forEach(city => {
+        store.commit('ADD_CITY_HISTORY', {
+          ...city,
+          temp: convertTemperature(city.temp)
+        });
       });
     }
   } catch (error) {
