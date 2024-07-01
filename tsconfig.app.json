@@ -20,17 +20,19 @@
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["vite/client", "jest", "webpack-env"] // Stellen Sie sicher, dass die Typen für Ihre Entwicklungsumgebung passen
+    "types": ["vite/client", "jest", "webpack-env","vitest/globals", "vue/macros-global"] // Stellen Sie sicher, dass die Typen für Ihre Entwicklungsumgebung passen
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "tests/**/*.ts"
   ],
   "exclude": [
     "node_modules",

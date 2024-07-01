@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted} from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore, mapGetters, mapActions } from 'vuex';
 import WeatherSearch from "@/components/WeatherSearch.vue";
@@ -48,6 +48,7 @@ export default {
     axios.defaults.withCredentials = false; // Globale Konfiguration für alle Anfragen
 
     async function fetchUserName() {
+
       try {
         const response = await axios.get(`${backendUrl}/users/current`, {
           withCredentials: true

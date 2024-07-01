@@ -45,6 +45,10 @@ const navigateToWeather = async () => {
     }
   }
 }
+defineExpose({
+  userName,
+  navigateToWeather
+});
 </script>
 
 

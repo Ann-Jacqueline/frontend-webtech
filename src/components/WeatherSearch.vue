@@ -16,47 +16,52 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex";
+<script setup>
+import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
 
-export default {
-  data() {
-    return {
-      search: this.$store.state.search
-    };
-  },
-  computed: {
-    ...mapGetters(["isSearched", "getWeatherCountry", "getError", "getTimezone"]),
-    currentDate() {
-      const today = new Date();
-      const timezoneOffset = this.getTimezone * 1000;
-      const localTimeOffset = new Date().getTimezoneOffset() * 60000;
-      const localDate = new Date(today.getTime() + timezoneOffset + localTimeOffset);
-      return localDate.toLocaleDateString('en-EN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    },
-    localTime() {
-      const today = new Date();
-      const timezoneOffset = this.getTimezone * 1000;
-      const localTimeOffset = new Date().getTimezoneOffset() * 60000;
-      const localDate = new Date(today.getTime() + timezoneOffset + localTimeOffset);
-      return "Local Time: " + localDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hour12: false }) + " Uhr";
-    }
-  },
-  methods: {
-    ...mapActions(["fetchWeatherData"]),
-    getData() {
-      if (this.search) {
-        this.fetchWeatherData(this.search).then(() => {
-          console.log("Wetterdaten erfolgreich geladen für:", this.search);
-        }).catch(error => {
-          console.error("Fehler beim Laden der Wetterdaten für:", this.search, error);
+
+const store = useStore();
+const search = ref(store.state.search);
+
+const isSearched = computed(() => store.getters.isSearched);
+const getWeatherCountry = computed(() => store.getters.getWeatherCountry);
+const getError = computed(() => store.getters.getError);
+const getTimezone = computed(() => store.getters.getTimezone);
+
+const currentDate = computed(() => {
+  const today = new Date();
+  const timezoneOffset = getTimezone.value * 1000;
+  const localTimeOffset = new Date().getTimezoneOffset() * 60000;
+  const localDate = new Date(today.getTime() + timezoneOffset + localTimeOffset);
+  return localDate.toLocaleDateString('en-EN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+});
+
+const localTime = computed(() => {
+  const today = new Date();
+  const timezoneOffset = getTimezone.value * 1000;
+  const localTimeOffset = new Date().getTimezoneOffset() * 60000;
+  const localDate = new Date(today.getTime() + timezoneOffset + localTimeOffset);
+  return "Local Time: " + localDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hour12: false }) + " Uhr";
+});
+
+const getData = () => {
+  if (search.value) {
+    store.dispatch('fetchWeatherData', search.value)
+        .then(() => {
+          console.log("Wetterdaten erfolgreich geladen für:", search.value);
+        })
+        .catch(error => {
+          console.error("Fehler beim Laden der Wetterdaten für:", search.value, error);
         });
-      }
-    }
   }
 };
-</script>
 
+defineExpose({
+  search,
+  getData
+});
+</script>
 
 <style lang="less" scoped>
 .weather-search {

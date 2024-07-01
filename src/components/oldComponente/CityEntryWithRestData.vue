@@ -96,7 +96,7 @@ function removeCity(id: number): void {
 
 <style scoped>
 #app {
-  background-image: url("../assets/images/Main Backround.jpg");
+  background-image: url("../../assets/images/Main Backround.jpg");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;

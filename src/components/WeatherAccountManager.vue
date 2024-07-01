@@ -28,7 +28,7 @@
               <span class="pin-text">Set as Default Search</span>
             </div>
             <span></span> <span></span>
-           <span>|</span>  <span></span>
+            <span>|</span>  <span></span>
             <span class="city-name">{{ city.name }} - {{ city.country }}</span>
             <span>|</span>
             <span class="temperature">Temperature: {{ city.temp }}°</span>
@@ -39,14 +39,14 @@
             <button @click="removeCity(city.id)" class="delete-button">Delete</button>
           </li>
         </ul>
-          <p v-else class="no-cities">{{ noCitiesMessage }}</p> <!-- Zeigt die Nachricht an, wenn keine Städte gesucht wurden -->
-        </div>
+        <p v-else class="no-cities">{{ noCitiesMessage }}</p> <!-- Zeigt die Nachricht an, wenn keine Städte gesucht wurden -->
       </div>
     </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -56,7 +56,7 @@ const backendUrl = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 const store = useStore();
 const router = useRouter();
 const showDropdown = ref(false);
-
+const userName = ref('');
 
 // Konvertiere die Temperatur basierend auf der gewählten Einheit
 function convertTemperature(temp) {
@@ -68,6 +68,7 @@ function convertTemperature(temp) {
       Math.round((temp - 32) * 5 / 9) :
       Math.round(temp * 9 / 5 + 32);
 }
+
 // Stadtverlauf mit dynamisch umgerechneten Temperaturen
 const cityHistory = computed(() => {
   const history = store.getters.getCityHistory;
@@ -81,11 +82,8 @@ const cityHistory = computed(() => {
 });
 
 const tempUnit = computed(() => store.getters.getTempUnit);
-const userName = computed(() => store.getters.getUserName);
 const defaultSearch = computed(() => store.state.defaultSearch);
-
 const noCitiesMessage = computed(() => typeof store.getters.getCityHistory === 'string' ? store.getters.getCityHistory : '');
-
 
 function toggleDropdown() {
   showDropdown.value = !showDropdown.value;
@@ -118,7 +116,6 @@ function removeCity(id) {
   store.dispatch('removeCity', id);
 }
 
-
 async function fetchCityHistory() {
   // Lade zuerst den Stadtverlauf aus dem Vuex-Store
   cityHistory.value = store.getters.getCityHistory.map(city => ({
@@ -146,8 +143,28 @@ async function fetchCityHistory() {
   }
 }
 
+async function fetchUserName() {
+  try {
+    const response = await axios.get(`${backendUrl}/users/current`, {
+      withCredentials: true
+    });
+    if (response.status === 200) {
+      userName.value = response.data.userName;
+    }
+  } catch (error) {
+    console.error('Failed to fetch current user:', error);
+  }
+}
 
-onMounted(fetchCityHistory);
+onMounted(() => {
+  store.commit('TOGGLE_TEMP_UNIT', 'C'); // Setze Temperatureinheit auf Celsius beim Mounten
+  fetchCityHistory();
+  fetchUserName();
+});
+
+onBeforeUnmount(() => {
+  store.commit('TOGGLE_TEMP_UNIT', 'C'); // Setze Temperatureinheit auf Celsius beim Verlassen der Seite
+});
 </script>
 
 

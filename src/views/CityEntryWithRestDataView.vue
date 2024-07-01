@@ -1,5 +1,5 @@
 <script lang="ts">
-import CityEntryWithRestData from "@/components/CityEntryWithRestData.vue";
+import CityEntryWithRestData from "@/components/oldComponente/CityEntryWithRestData.vue";
 import { defineComponent } from 'vue'
 
 export default defineComponent({
