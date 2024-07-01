@@ -67,14 +67,14 @@ describe('WeatherStartPage', () => {
         wrapper.vm.userName = 'InvalidUser';
 
         // Mock a failure in the request
-        vi.mocked(axios.post).mockRejectedValueOnce(new Error('Login failed'));
+        vi.mocked(axios.post).mockRejectedValueOnce('Login failed');
 
         await wrapper.vm.navigateToWeather();
         await flushPromises();
 
         // Check that no navigation has taken place
         expect(router.push).not.toHaveBeenCalled();
-        expect(consoleSpy).toHaveBeenCalledWith('Error during login or fetching user:', new Error('Login failed'));
+        expect(consoleSpy).toHaveBeenCalledWith('Error during login or fetching user:',('Login failed'));
 
         consoleSpy.mockRestore(); // Ensure the spy is cleaned up after the test
     });
@@ -90,13 +90,13 @@ describe('WeatherStartPage', () => {
         wrapper.vm.userName = 'ErrorCase';
 
         // Mock an error in the login request
-        vi.mocked(axios.post).mockRejectedValueOnce(new Error('Network Error'));
+        vi.mocked(axios.post).mockRejectedValueOnce('Network Error');
 
         await wrapper.vm.navigateToWeather();
         await flushPromises();
 
         // Check if the error was logged
-        expect(consoleSpy).toHaveBeenCalledWith('Error during login or fetching user:', new Error('Network Error'));
+        expect(consoleSpy).toHaveBeenCalledWith('Error during login or fetching user:', ('Network Error'));
 
         consoleSpy.mockRestore(); // Ensure the spy is cleaned up after the test
     });

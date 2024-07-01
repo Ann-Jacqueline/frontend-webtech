@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import axios, { AxiosError } from 'axios';
 
-
 // Configuration for the backend URL
 const backendUrl = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
@@ -18,6 +17,24 @@ const store = useStore();
 // Ensure axios sends cookies with each request (if your backend requires sessions)
 axios.defaults.withCredentials = true;
 
+// Axios Request Interceptor for logging request details
+axios.interceptors.request.use(config => {
+  console.log(`Sending Request to: ${config.url}`, config);
+  return config;
+}, error => {
+  console.error('Request error:', error);
+  return Promise.reject(error);
+});
+
+// Axios Response Interceptor for logging response details
+axios.interceptors.response.use(response => {
+  console.log(`Received response from: ${response.config.url}`, response);
+  return response;
+}, error => {
+  console.error('Response error:', error);
+  return Promise.reject(error);
+});
+
 // onMounted lifecycle hook to initialize userName when the component is mounted
 onMounted(() => {
   userName.value = ''; // Clear userName
@@ -28,26 +45,20 @@ onMounted(() => {
 const navigateToWeather = async () => {
   if (userName.value.trim()) {
     try {
-      // Directly await the post request and check the status without storing it in a constant
       const response = await axios.post(`${backendUrl}/users/login`, { userName: userName.value.trim() });
-      if (response.status === 201) { // Check for successful session creation
-        console.log('Login successful');
+      console.log('Login successful');
 
-        // Fetch current user data post-login
-        const userResponse = await axios.get(`${backendUrl}/users/current`);
-        if (userResponse.data && userResponse.data.userName) {
-          console.log('Current user loaded:', userResponse.data.userName);
-          store.dispatch('setUser', userResponse.data.userName); // Store user info in Vuex store
-          router.push('/weather'); // Navigate to weather page
-        }
+      const userResponse = await axios.get(`${backendUrl}/users/current`);
+      if (userResponse.data && userResponse.data.userName) {
+        console.log('Current user loaded:', userResponse.data.userName);
+        store.dispatch('setUser', userResponse.data.userName);
+        router.push('/weather');
       }
     } catch (error) {
-      const axiosError = error as AxiosError; // Cast error to AxiosError
+      const axiosError = error as AxiosError;
       console.error('Error during login or fetching user:', axiosError.message);
       if (axiosError.response && axiosError.response.status === 401) {
-        // Handle 401 error specifically
         console.error('Session expired or invalid. Please log in again.');
-        // Redirect to log in or show error message
       }
     }
   }
@@ -58,6 +69,7 @@ defineExpose({
   navigateToWeather
 });
 </script>
+
 
 
 <template>
