@@ -25,7 +25,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["vite/client", "jest", "webpack-env","vitest/globals", "vue/macros-global"] // Stellen Sie sicher, dass die Typen für Ihre Entwicklungsumgebung passen
+    "types": ["vite/client", "jest", "webpack-env","vitest/globals"] // Stellen Sie sicher, dass die Typen für Ihre Entwicklungsumgebung passen
   },
   "include": [
     "src/**/*.ts",
